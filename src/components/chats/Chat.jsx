@@ -1,48 +1,67 @@
 import React, { useState, useRef, useEffect } from "react";
+import "./Chat.css"
 
 export default function Chat({ userName = "You" }) {
-  const [messages, setMessages] = useState([
-    {user:"amit" , text: "Hello"},
-    {user: "catherin", text : "Hii"}
-  ]);
-  const [input, setInput] = useState("");
+
   const messagesEndRef = useRef(null);
+  const [messages, setMessages] = useState([
+   { text: "Hello", sender: "You", time: new Date()},
+   { text: "Hi, how can i help you today?", sender: "Alexa", time: new Date()},
+   { text: "All good?", sender: "You", time: new Date()},
+   { text: "Yes I am perfectly fine.. what about you??", sender: "Alexa", time: new Date()},
+   { text: "Hey, I am building the real time code editor, with features like Code run, chats suggest me some unique interesting names for project", sender: "You", time: new Date()},
+   { text: "Nice 🚀 That's an exciting project! Since your editor has real-time collaboration + code execution + chat, ll suggest some unique, catchy names that reflect coding + teamwork + communication", sender: "Alexa", time: new Date()},
+  ]);
+  const [message, setMessage] = useState("");
 
   // Scroll to bottom when new message is added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (input.trim() === "") return;
-    setMessages([...messages, { user: userName, text: input }]);
-    setInput("");
+ const sendMessage = () => {
+    if (message.trim() === "") return;
+    const newMsg = { text: message, sender: "You", time: new Date() };
+    // socket.emit("chat-message", newMsg);
+    setMessages((prev) => [...prev, newMsg]);
+    setMessage("");
   };
 
-  return (
-    <div className="chats-container" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <h3 className="panel-heading">Group Chats</h3>
-      <div className="messages-list" style={{ flex: 1, overflowY: "auto", marginBottom: "10px", padding: "8px" }}>
+ return (
+    <div className="chat-container">
+       <h3 className="panel-heading">Group Chats</h3>
+
+      {/* Chat Messages */}
+      <div className="chat-messages">
         {messages.map((msg, idx) => (
-          <div key={idx} style={{ margin: "4px 0" , width: "50%", marginLeft : "auto" }}>
-            <strong>{msg.user}:</strong> {msg.text}
+          <div
+            key={idx}
+            className={`chat-message ${
+              msg.sender === "You" ? "chat-message-you" : "chat-message-other"
+            }`}
+          >
+            {msg.text}
+            <span>
+              {msg.sender} • {new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+            </span>
           </div>
         ))}
-        <div ref={messagesEndRef} />
+
+        <div ref={messagesEndRef}></div>
+
       </div>
-      <form onSubmit={handleSend} style={{ display: "flex", gap: "8px" }}>
+
+      {/* Input */}
+      <div className="chat-input">
         <input
           type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
           placeholder="Type a message..."
-          style={{ flex: 1, padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        <button type="submit" style={{ padding: "8px 16px", borderRadius: "4px", background: "#646cff", color: "#fff", border: "none" }}>
-          Send
-        </button>
-      </form>
+        <button  onClick={sendMessage}>Send</button>
+      </div>
     </div>
   );
 }
