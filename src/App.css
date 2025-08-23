@@ -1,0 +1,165 @@
+/* #root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+} */
+
+/* Home page style */
+.home-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.form-container {
+  background: #282a36;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+}
+
+/* .home-container{
+  width: 50%;
+}
+.home-img{
+ width: 50%;
+ height: 50%;
+} */
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  background: #eee;
+  color: #282a36;
+  font-weight: bolder;
+  font-size: 1rem;
+}
+
+.btn {
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.join-btn,
+.leave-btn {
+  background: #f7315c;
+  color: white;
+  font-weight: bolder;
+  width: 40%;
+}
+
+.join-btn:hover,
+.leave-btn:hover {
+  background: #910221;
+  color: white;
+}
+
+.create-info {
+  margin: 0 auto;
+  margin-top: 1.2rem;
+}
+
+.new-room-btn {
+  margin-left: 5px;
+}
+.new-room-btn:hover {
+  border-bottom: 1px solid #646cff;
+}
+
+/* Editor page styles */
+
+.editor-container {
+  display: flex;
+  min-height: 100vh;
+}
+.clients-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+.editor-panel {
+  width: 100%;
+  background: #1e1e1e;
+  padding: 10px;
+  overflow-y: auto;
+}
+.chat-panel {
+  width: 25%;
+  background: #282a36;
+  padding: 10px;
+  overflow-y: auto;
+}
+.logo {
+  border-bottom: 2px solid #a6a3a3;
+  padding-bottom: 10px;
+}
+.panel-heading {
+  margin: 10px 0;
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid #615e5e;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.client-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-height: 50%;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.client {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.client-name {
+  margin-top: 5px;
+}
+
+.action-btns {
+  margin-top: auto;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #615e5e;
+}
+
+.leave-btn,
+.copy-btn {
+  width: 80%;
+}
+
+/* CodeMirror specific styles */
+
+.CodeMirror {
+  min-height: calc(100vh - 25px);
+  font-size: 20px;
+  line-height: 1.5;
+  border: 1.5px solid  #868686 !important;
+  border-radius: 10px;      
+}

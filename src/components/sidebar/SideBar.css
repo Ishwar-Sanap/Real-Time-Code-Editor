@@ -1,0 +1,71 @@
+.sidebar-container {
+  display: flex;
+  height: 100vh;
+  background: #1e1e1e;
+}
+
+.sidebar-icons {
+  display: flex;
+  flex-direction: column;
+  background: #23272e;
+  width: 60px;
+  align-items: center;
+  padding: 8px 0;
+  border-right: 1px solid #868686;
+}
+
+.sidebar-icon {
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 1.5rem;
+  margin: 8px 0;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.sidebar-icon.active,
+.sidebar-icon:hover {
+  background: #333;
+  color: #fff;
+}
+
+.sidebar-panel {
+  background: #222;
+  position: relative;
+  min-width: 150px;
+  max-width: 500px;
+  transition: width 0.1s;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When .sidebar-panel has the resizing class, the transition property 
+will be set to none no matter what other transition rules exist for .sidebar-panel.  */
+.sidebar-panel.resizing {
+  transition: none !important;
+}
+
+.sidebar-panel-content {
+  flex: 1;
+  padding: 16px;
+  color: #fff;
+  overflow: auto;
+ 
+}
+
+.sidebar-resizer {
+  width: 4px;
+  cursor: col-resize;
+  border-right: 2px solid #555454;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+.sidebar-resizer:hover {
+  background: #555454;
+}
