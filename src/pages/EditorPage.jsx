@@ -133,29 +133,7 @@ export default function EditorPage() {
   return (
     <div className="editor-container">
      
-      {/* <div className="left-panel">
-        <div className="logo">
-          <img src="/" alt="logo of code editor" className="logo-img" />
-        </div>
-
-        <h3>Connected </h3>
-
-        <div className="client-list">
-          {clients.map((client) => (
-            <Client key={client.socketID} userName={client.userName} />
-          ))}
-        </div>
-
-        <div className="action-btns">
-          <button onClick= {handleCopyRoomID} className="btn copy-btn">Copy Room ID</button>
-          <button onClick={handleLeaveRoom} className="btn leave-btn">Leave</button>
-        </div>
-      </div> */
-      }
-
-      {/* Adding Sidebar component */}
-
-      <SideBar connectedClients={clients} />
+      <SideBar connectedClients={clients} socketRef= {socketRef} />
 
       <div className="editor-panel">
         <Editor socketRef= {socketRef} roomID = {roomID} onCodeChange = {(code)=> codeRef.current = code}/>

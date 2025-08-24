@@ -18,7 +18,7 @@ const panelContent = {
   settings: <div>Settings Content</div>,
 };
 
-export default function Sidebar({connectedClients}) {
+export default function Sidebar({connectedClients , socketRef}) {
   const [activePanel, setActivePanel] = useState();
   const [width, setWidth] = useState(350);
   const sidebarRef = useRef(null);
@@ -49,7 +49,7 @@ export default function Sidebar({connectedClients}) {
       return <Clients connectedClients={connectedClients} />;
     }
     else if(activePanel == 'chats'){
-      return <Chat/>
+      return <Chat socketRef={socketRef} />
     }
   }
 
@@ -76,7 +76,12 @@ export default function Sidebar({connectedClients}) {
   return (
     <div className="sidebar-container">
       
+
       <div className="sidebar-icons">
+        <div className="logo">
+          <img src="/" alt="Logo" className="logo-img" />
+        </div>
+        
         {panels.map((panel) => {
           return (
             <button

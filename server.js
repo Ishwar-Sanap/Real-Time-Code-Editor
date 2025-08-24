@@ -69,6 +69,11 @@ io.on('connection', (socket) => {
         io.to(socketID).emit(ACTIONS.CODE_CHANGE, {code});
     })
 
+    //Listen for the Chat Message
+    socket.on(ACTIONS.CHAT_MSG, ({roomID,text, sender, time})=>{
+      //BroadCast the message to all connected clients
+      socket.in(roomID).emit(ACTIONS.CHAT_MSG , {text, sender, time})
+    })
     socket.on('disconnecting', () => {
 
         const rooms = [...socket.rooms];
