@@ -1,67 +1,71 @@
-import React, { useState, useRef, useEffect } from "react";
-import "./Chat.css"
+import { useState, useRef, useEffect } from "react";
+import "./Chat.css";
 import ACTIONS from "../../actions";
 import { useLocation, useParams } from "react-router-dom";
+import { useSocket } from "../../contexts/SocketContext";
+import { useMessages } from "../../contexts/MessagesContext";
 
-export default function Chat({socketRef}) {
-
+export default function Chat() {
   const messagesEndRef = useRef(null);
-  const [messages, setMessages] = useState([
-   { text: "Hello", sender: "You", time: new Date()},
-   { text: "Hi, how can i help you today?", sender: "Alexa", time: new Date()},
-   { text: "All good?", sender: "You", time: new Date()},
-   { text: "Yes I am perfectly fine.. what about you??", sender: "Alexa", time: new Date()},
-   { text: "Hey, I am building the real time code editor, with features like Code run, chats suggest me some unique interesting names for project", sender: "You", time: new Date()},
-   { text: "Nice 🚀 That's an exciting project! Since your editor has real-time collaboration + code execution + chat, ll suggest some unique, catchy names that reflect coding + teamwork + communication", sender: "Alexa", time: new Date()},
-  ]);
+  const { messages, setMessages } = useMessages();
   const [message, setMessage] = useState("");
-  const location = useLocation()
-  const userName =  location.state?.userName;
-  // console.log("user of chat panel : ", userName)
-
-  const { roomID } = useParams()
+  const location = useLocation();
+  const userName = location.state?.userName;
+  const { roomID } = useParams();
+  const socketRef = useSocket();
 
   // Scroll to bottom when new message is added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
- const sendMessage = () => {
+  useEffect(() => {
+    if (!socketRef.current) return;
+    
+    console.log("Reciving messages from server : ");
+
+    //Listen for new chat messages
+    socketRef.current.on(ACTIONS.CHAT_MSG, ({ text, sender, time }) => {
+      const newMsg = { text, sender, time };
+      console.log(newMsg);
+      setMessages((prev) => [...prev, newMsg]);
+    });
+
+    //Listening for chat synch
+    socketRef.current.on(ACTIONS.CHAT_MSG_SYNC, ({ messages }) => {
+      setMessages(messages);
+    });
+
+    //After listeners are attached, request chat synch
+    socketRef.current.emit(ACTIONS.SYNC_CHATS, {roomID ,socketID: socketRef.current.id});
+
+    //clean up
+    return () => {
+      socketRef.current.off(ACTIONS.CHAT_MSG);
+      socketRef.current.off(ACTIONS.CHAT_MSG_SYNC);
+    };
+  }, []);
+
+  const sendMessage = () => {
     if (message.trim() === "") return;
-  
-    const newMsg = {roomID ,text: message, sender: userName, time: new Date() };
 
-    // When yourser clicks on sendMessage that, mens the sender is himself so while disply message on UI
-    // User should dislpay as you : and other clients should be able to display the name
-    const yourMsg = {...newMsg, sender : "You"};
+    const newMsg = {
+      roomID,
+      text: message,
+      sender: userName,
+      time: new Date(),
+    };
 
-    setMessages((prev)=> [...prev , yourMsg]);
+    setMessages((prev) => [...prev, newMsg]);
     setMessage("");
 
     //Sending the chat messages to the server..
     socketRef.current.emit(ACTIONS.CHAT_MSG, newMsg);
   };
 
-  useEffect(()=>{
-    console.log('Reciving messages from server: ')
-     //Listen the message send from server
-    socketRef.current.on(ACTIONS.CHAT_MSG, ({text, sender, time})=>{
-
-      const newMsg = {text, sender , time};
-      console.log(newMsg)
-
-      setMessages((prev) => [...prev, newMsg]);
-    })
-
-    //clean up
-    return ()=>{
-        socketRef.current.off(ACTIONS.CHAT_MSG);
-    }
-  },[socketRef.current])
-
- return (
+  return (
     <div className="chat-container">
-       <h3 className="panel-heading">Group Chats</h3>
+      <h3 className="panel-heading">Group Chats</h3>
 
       {/* Chat Messages */}
       <div className="chat-messages">
@@ -69,18 +73,22 @@ export default function Chat({socketRef}) {
           <div
             key={idx}
             className={`chat-message ${
-              msg.sender === "You" ? "chat-message-you" : "chat-message-other"
+              msg.sender === userName ? "chat-message-you" : "chat-message-other"
             }`}
           >
             {msg.text}
             <span>
-              {msg.sender} • {new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+              {msg.sender === userName ? "You" : msg.sender} •{" "}
+              {new Date(msg.time).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </span>
           </div>
         ))}
 
         <div ref={messagesEndRef}></div>
-
+        
       </div>
 
       {/* Input */}
@@ -92,7 +100,7 @@ export default function Chat({socketRef}) {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        <button  onClick={sendMessage}>Send</button>
+        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   );

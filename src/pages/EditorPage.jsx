@@ -14,10 +14,13 @@ import Spinner from "../components/Spinner";
 import SideBar from "../components/sidebar/SideBar";
 import { useDispatch, useSelector } from "react-redux";
 import { addClient , removeClient } from "../redux/slices/clientsSlice";
+import {SocketContext , useSocket} from "../contexts/SocketContext"
+import { MessagesContext } from "../contexts/MessagesContext";
 
 export default function EditorPage() {
   const socketRef = useRef(null);
   const codeRef = useRef(null);
+  const [messages, setMessages] = useState([])
 
   // useLocation is used to get the state passed from Home component
   const location = useLocation();
@@ -87,7 +90,8 @@ export default function EditorPage() {
         // setClinets(clients); // commented for testing
         console.log("Dispatching the clients :", clients);
         dispatch(addClient(clients))
-         setLoading(false);
+        setLoading(false);
+        //When user joins the Room Synch the Code and Messages from server
         socketRef.current.emit(ACTIONS.SYNC_CODE, {code : codeRef.current, socketID});
       });
 
@@ -144,13 +148,18 @@ export default function EditorPage() {
 
   return (
     <div className="editor-container">
-     
-      <SideBar socketRef= {socketRef} />
+      
+      <SocketContext.Provider value={socketRef}>
+
+      <MessagesContext.Provider value={{messages , setMessages}}>
+        <SideBar/>
+      </MessagesContext.Provider>
 
       <div className="editor-panel">
-        <Editor socketRef= {socketRef} roomID = {roomID} onCodeChange = {(code)=> codeRef.current = code}/>
+        <Editor roomID = {roomID} onCodeChange = {(code)=> codeRef.current = code}/>
       </div>
 
+      </SocketContext.Provider>
       {/* <div className="chat-panel">
         <h3>chat goes here</h3>
       </div> */}

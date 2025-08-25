@@ -6,11 +6,13 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/addon/edit/closebrackets";
 import "codemirror/addon/edit/closetag";
 import ACTIONS from "../actions";
+import { useSocket } from "../contexts/SocketContext";
 
-export default function Editor({ socketRef, roomID, onCodeChange }) {
+export default function Editor({ roomID, onCodeChange }) {
   const textAreaRef = useRef(null);
   const codeMirrInstance = useRef(null);
-
+  const socketRef = useSocket();
+  
   useEffect(() => {
     async function init() {
       if (textAreaRef.current && !codeMirrInstance.current) {

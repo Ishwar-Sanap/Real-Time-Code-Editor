@@ -1,4 +1,3 @@
-
 import express from 'express';
 const app = express();
 import { createServer, get } from 'http';
@@ -16,6 +15,9 @@ const io = new Server(server);
 //This will store the user name of each socket
 //This is a simple in-memory store, for production use a database or persistent store
 const userSocketMap = {};
+
+//Store messages for each room
+const roomMessage = {} // { roomID: [ {text, sender, time}, ... ] }
 
 // Get all clients in the room and 
 const getConnectedClients = (roomID) => {
@@ -41,7 +43,6 @@ io.on('connection', (socket) => {
         socket.join(roomID);
 
         const clients = getConnectedClients(roomID);
-        console.log(clients);
 
         clients.forEach(({socketID})=>{
 
@@ -71,9 +72,21 @@ io.on('connection', (socket) => {
 
     //Listen for the Chat Message
     socket.on(ACTIONS.CHAT_MSG, ({roomID,text, sender, time})=>{
-      //BroadCast the message to all connected clients
+
+      //If roomID not there then, add 
+      if(!roomMessage[roomID]) roomMessage[roomID] = [];
+
+      roomMessage[roomID].push({text, sender, time});
+
+      //BroadCast the message to all connected clients in room
       socket.in(roomID).emit(ACTIONS.CHAT_MSG , {text, sender, time})
     })
+
+    socket.on(ACTIONS.SYNC_CHATS, ({roomID , socketID}) =>{
+      const messages = roomMessage[roomID] || [] ;
+       io.to(socketID).emit(ACTIONS.CHAT_MSG_SYNC, {messages});
+    } )
+
     socket.on('disconnecting', () => {
 
         const rooms = [...socket.rooms];
