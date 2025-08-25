@@ -12,6 +12,8 @@ import {
 import { toast } from "react-hot-toast";
 import Spinner from "../components/Spinner";
 import SideBar from "../components/sidebar/SideBar";
+import { useDispatch, useSelector } from "react-redux";
+import { addClient , removeClient } from "../redux/slices/clientsSlice";
 
 export default function EditorPage() {
   const socketRef = useRef(null);
@@ -20,6 +22,12 @@ export default function EditorPage() {
   // useLocation is used to get the state passed from Home component
   const location = useLocation();
 
+  const connectedClients = useSelector((state) => state.connectedClients.clients) //Get the state from store..
+  console.log("connectedClients : ", connectedClients)
+
+  const dispatch = useDispatch(); //returns — The dispatch function from the Redux store.
+
+
   console.log("userName : ", location.state?.userName);
   // useNavigate is used to navigate to different routes
   const reactNavigator = useNavigate();
@@ -27,20 +35,19 @@ export default function EditorPage() {
   // useParams is used to get the roomID from the URL
   const { roomID } = useParams();
 
-  const [clients, setClinets] = useState([
-    { socketID: 1, userName: "User 1" },
-    { socketID: 2, userName: "User 2" },
-    { socketID: 3, userName: "User 3" },
-    { socketID: 4, userName: "User 4" },
-    { socketID: 5, userName: "User 5" },
-    { socketID: 6, userName: "User 6" },
-    { socketID: 7, userName: "User 7" },
-    { socketID: 8, userName: "User 8" },
-    { socketID: 9, userName: "User 9" },
-    { socketID: 10, userName: "User 10" },
+  // const [clients, setClinets] = useState([
+  //   { socketID: 1, userName: "User 1" },
+  //   { socketID: 2, userName: "User 2" },
+  //   { socketID: 3, userName: "User 3" },
+  //   { socketID: 4, userName: "User 4" },
+  //   { socketID: 5, userName: "User 5" },
+  //   { socketID: 6, userName: "User 6" },
+  //   { socketID: 7, userName: "User 7" },
+  //   { socketID: 8, userName: "User 8" },
+  //   { socketID: 9, userName: "User 9" },
+  //   { socketID: 10, userName: "User 10" },
 
-
-  ]);
+  // ]);
   const [loading, setLoading] = useState(true);
 
   const handleErrors = (err) => {
@@ -78,6 +85,8 @@ export default function EditorPage() {
 
         // Update the clients list state, on UI
         // setClinets(clients); // commented for testing
+        console.log("Dispatching the clients :", clients);
+        dispatch(addClient(clients))
          setLoading(false);
         socketRef.current.emit(ACTIONS.SYNC_CODE, {code : codeRef.current, socketID});
       });
@@ -85,9 +94,12 @@ export default function EditorPage() {
       // Listen for the DISCONNECTED event to remove the client from the list
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketID, userName }) => {  
         toast.error(`${userName} has left the room`);
-        setClinets((prev) => {
-          return prev.filter((client) => client.socketID !== socketID);
-        });
+        dispatch(removeClient(socketID));
+
+        // setClinets((prev) => {
+        //   return prev.filter((client) => client.socketID !== socketID);
+        // });
+
       });
     } catch (err) {
       handleErrors(err);
@@ -133,7 +145,7 @@ export default function EditorPage() {
   return (
     <div className="editor-container">
      
-      <SideBar connectedClients={clients} socketRef= {socketRef} />
+      <SideBar socketRef= {socketRef} />
 
       <div className="editor-panel">
         <Editor socketRef= {socketRef} roomID = {roomID} onCodeChange = {(code)=> codeRef.current = code}/>

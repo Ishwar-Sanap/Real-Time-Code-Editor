@@ -2,10 +2,14 @@ import React from "react";
 import Avatar from "react-avatar";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
 
-export default function Clients({ connectedClients }) {
+export default function Clients() {
   const { roomID } = useParams();
   const reactNavigator = useNavigate();
+
+  const connectedClients = useSelector((state)=> state.connectedClients.clients); //get connected clinets from store
+  console.log("clinets in Clinet comp : ", connectedClients);
 
   async function handleCopyRoomID() {
     try {

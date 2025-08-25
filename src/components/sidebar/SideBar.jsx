@@ -18,7 +18,7 @@ const panelContent = {
   settings: <div>Settings Content</div>,
 };
 
-export default function Sidebar({connectedClients , socketRef}) {
+export default function Sidebar({ socketRef}) {
   const [activePanel, setActivePanel] = useState();
   const [width, setWidth] = useState(350);
   const sidebarRef = useRef(null);
@@ -46,7 +46,7 @@ export default function Sidebar({connectedClients , socketRef}) {
   };
   const renderActivePanelContent = () => {
     if(activePanel == 'clients'){
-      return <Clients connectedClients={connectedClients} />;
+      return <Clients/>;
     }
     else if(activePanel == 'chats'){
       return <Chat socketRef={socketRef} />
