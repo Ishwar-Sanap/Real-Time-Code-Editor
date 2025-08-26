@@ -8,7 +8,8 @@ const ACTIONS = {
     LEAVE: "leave",
     CHAT_MSG: "chat-msg",
     SYNC_CHATS: "sync-chats",
-    CHAT_MSG_SYNC : "chat-msg-sync"
+    CHAT_MSG_SYNC : "chat-msg-sync",
+    CURSOR_POS_SYNC : "cursor-pos-synch"
 
 }
 

@@ -70,6 +70,10 @@ io.on('connection', (socket) => {
         io.to(socketID).emit(ACTIONS.CODE_CHANGE, {code});
     })
 
+    socket.on(ACTIONS.CURSOR_POS_SYNC, ({userName,roomID, cursor})=>{
+        socket.in(roomID).emit(ACTIONS.CURSOR_POS_SYNC, {userName ,cursor}) //socket.in(roomID) which emits to all clinets except sender
+    })
+
     //Listen for the Chat Message
     socket.on(ACTIONS.CHAT_MSG, ({roomID,text, sender, time})=>{
 
