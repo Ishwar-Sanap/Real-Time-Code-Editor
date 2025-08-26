@@ -1,12 +1,12 @@
-import React from "react";
+import {useState} from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 
 export default function Home() {
-  const [roomID, setRoomID] = React.useState("");
-  const [userName, setUserName] = React.useState("");
+  const [roomID, setRoomID] = useState(sessionStorage.getItem("roomID") || "");
+  const [userName, setUserName] = useState(sessionStorage.getItem("userName") || "");
   const navigate = useNavigate();
 
   const createNewRoom = (e) => {
@@ -23,6 +23,10 @@ export default function Home() {
       toast.error("Room ID & User Name is required");
       return;
     }
+
+    //Store user name and room ID in session storage so, when you came back to home page values can be restored.
+    sessionStorage.setItem("userName", userName);
+    sessionStorage.setItem("roomID", roomID);
 
     //Redirect to the editor page with roomID
     navigate(`/editor/${roomID}`, {
