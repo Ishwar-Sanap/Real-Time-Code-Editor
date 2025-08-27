@@ -9,21 +9,34 @@ import ACTIONS from "../actions";
 import { useSocket } from "../contexts/SocketContext";
 import throttle from "lodash.throttle";
 
+
+function getRandomColor (){
+
+  //Hexadecimal color format : #FFFFFF
+
+  const letteres = "0123456789ABCDEF";
+  let color = "#";
+
+  for(let i = 0; i<6; i++)
+  {
+    let indx = Math.floor((Math.random() * 16));
+    color += letteres[indx];
+  }
+
+  return color;
+}
+
 export default function Editor({ roomID, onCodeChange }) {
   const textAreaRef = useRef(null);
   const codeMirrInstance = useRef(null);
   const socketRef = useSocket();
 
   const myUserName = sessionStorage.getItem("userName");
-  console.log("userName in editor ", myUserName);
-
   const cursors = {};
 
-  function updateCursorTooltip(editor, userName, cursor, color = "red") {
+  function updateCursorTooltip(editor, userName, cursor, color) {
     // invalid cursor
-    if (!cursor || cursor.line == null || cursor.ch == null) {
-      return;
-    }
+    if (!cursor || cursor.line == null || cursor.ch == null) return;
     if (cursor.line === 0 && cursor.ch === 0) return;
 
     // clear old marker
@@ -45,11 +58,13 @@ export default function Editor({ roomID, onCodeChange }) {
     const tooltip = document.createElement("div");
     tooltip.textContent = userName;
     tooltip.style.position = "absolute";
-    tooltip.style.top = `-${editor.defaultTextHeight()}px`;
+
+    if(cursor.line > 0)tooltip.style.top = `-${editor.defaultTextHeight()}px`;
+
     tooltip.style.left = "0";
     tooltip.style.background = color;
     tooltip.style.color = "white";
-    tooltip.style.fontSize = "10px";
+    tooltip.style.fontSize = "13px";
     tooltip.style.padding = "2px 4px";
     tooltip.style.borderRadius = "4px";
     tooltip.style.whiteSpace = "nowrap";
@@ -97,10 +112,10 @@ export default function Editor({ roomID, onCodeChange }) {
       codeMirrInstance.current.on("change", (instance, changes) => {
         const { origin } = changes;
         const code = instance.getValue();
-        console.log(code);
+
         onCodeChange(code); // Call the onCodeChange prop to update the code in the parent component
+        
         if (origin !== "setValue") {
-          console.log("Code change event emmited");
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
             roomID,
             code,
@@ -109,18 +124,19 @@ export default function Editor({ roomID, onCodeChange }) {
       });
 
       codeMirrInstance.current.setValue("// Your code goes here..");
-
+      const randomColor = getRandomColor();
+      
       codeMirrInstance.current.on(
         "cursorActivity",
         
         // Creates a throttled function that only invokes func at most once per every wait milliseconds.
         throttle((cm) => {
-          const cursor = cm.getCursor();
-          console.log("Cursor Pos : ", cursor);
+          const cursor = cm.getCursor();  // it will give the cursor position from editor (line num, character position)
           socketRef.current.emit(ACTIONS.CURSOR_POS_SYNC, {
             userName: myUserName,
             roomID,
             cursor,
+            randomColor
           });
 
           // update my own tooltip immediately
@@ -128,7 +144,7 @@ export default function Editor({ roomID, onCodeChange }) {
             codeMirrInstance.current,
             myUserName,
             cursor,
-            "blue"
+           randomColor
           );
         }, 100)
 
@@ -150,18 +166,17 @@ export default function Editor({ roomID, onCodeChange }) {
   // This will be called when the server emits the CODE_CHANGE event
   useEffect(() => {
     if (!socketRef.current) return;
-
+    
     socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
       if (code !== null) {
         codeMirrInstance.current.setValue(code);
       }
     });
 
-    socketRef.current.on(ACTIONS.CURSOR_POS_SYNC, ({ userName, cursor }) => {
-      console.log("Listening ACTIONS.CURSOR_POS_SYNC ", userName);
+    socketRef.current.on(ACTIONS.CURSOR_POS_SYNC, ({ userName, cursor, randomColor }) => {
       if (userName == myUserName) return;
 
-      updateCursorTooltip(codeMirrInstance.current, userName, cursor, "red");
+      updateCursorTooltip(codeMirrInstance.current, userName, cursor, randomColor);
     });
 
     // Clean up the event listener on unmount

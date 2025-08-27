@@ -17,7 +17,7 @@ const io = new Server(server);
 const userSocketMap = {};
 
 //Store messages for each room
-const roomMessage = {} // { roomID: [ {text, sender, time}, ... ] }
+const roomMessages = {} // { roomID: [ {text, sender, time}, ... ] }
 
 // Get all clients in the room and 
 const getConnectedClients = (roomID) => {
@@ -70,24 +70,24 @@ io.on('connection', (socket) => {
         io.to(socketID).emit(ACTIONS.CODE_CHANGE, {code});
     })
 
-    socket.on(ACTIONS.CURSOR_POS_SYNC, ({userName,roomID, cursor})=>{
-        socket.in(roomID).emit(ACTIONS.CURSOR_POS_SYNC, {userName ,cursor}) //socket.in(roomID) which emits to all clinets except sender
+    socket.on(ACTIONS.CURSOR_POS_SYNC, ({userName,roomID, cursor,randomColor})=>{
+        socket.in(roomID).emit(ACTIONS.CURSOR_POS_SYNC, {userName ,cursor,randomColor}) //socket.in(roomID) which emits to all clinets except sender
     })
 
     //Listen for the Chat Message
     socket.on(ACTIONS.CHAT_MSG, ({roomID,text, sender, time})=>{
 
       //If roomID not there then, add 
-      if(!roomMessage[roomID]) roomMessage[roomID] = [];
+      if(!roomMessages[roomID]) roomMessages[roomID] = [];
 
-      roomMessage[roomID].push({text, sender, time});
+      roomMessages[roomID].push({text, sender, time});
 
       //BroadCast the message to all connected clients in room
       socket.in(roomID).emit(ACTIONS.CHAT_MSG , {text, sender, time})
     })
 
     socket.on(ACTIONS.SYNC_CHATS, ({roomID , socketID}) =>{
-      const messages = roomMessage[roomID] || [] ;
+      const messages = roomMessages[roomID] || [] ;
        io.to(socketID).emit(ACTIONS.CHAT_MSG_SYNC, {messages});
     } )
 

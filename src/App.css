@@ -163,3 +163,7 @@
   border: 1.5px solid  #868686 !important;
   border-radius: 10px;      
 }
+
+.CodeMirror .CodeMirror-selected {
+  background: #4a6cf2a0 !important;
+}

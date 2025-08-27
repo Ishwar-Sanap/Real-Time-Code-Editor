@@ -41,6 +41,8 @@ export default function Chat() {
 
     //clean up
     return () => {
+      if (!socketRef.current) return;
+      
       socketRef.current.off(ACTIONS.CHAT_MSG);
       socketRef.current.off(ACTIONS.CHAT_MSG_SYNC);
     };
