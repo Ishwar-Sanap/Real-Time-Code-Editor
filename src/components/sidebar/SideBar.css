@@ -10,7 +10,7 @@
   background: #23272e;
   width: 60px;
   align-items: center;
-  padding: 8px 0;
+  padding: 20px 0;
   border-right: 1px solid #868686;
 }
 
@@ -27,7 +27,7 @@
 }
 .sidebar-icon.active,
 .sidebar-icon:hover {
-  background: #333;
+  background: #726c6c;
   color: #fff;
 }
 

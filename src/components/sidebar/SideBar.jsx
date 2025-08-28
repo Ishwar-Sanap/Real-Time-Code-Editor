@@ -2,14 +2,23 @@ import React, { useState, useRef, useEffect } from "react";
 import Clients from "../Clients";
 import "./SideBar.css";
 import Chat from "../chats/Chat";
+import { PiCodeSimpleFill } from "react-icons/pi";
+import { VscFiles } from "react-icons/vsc";
+import { FaPlay } from "react-icons/fa";
+import { BsChatSquareTextFill  } from "react-icons/bs";
+import { FaUsers } from "react-icons/fa6";
+import { IoSettingsSharp } from "react-icons/io5";
+import { FaShareAlt } from "react-icons/fa";
+import Settings from "../settings/Settings";
+
 
 const panels = [
-  { key: "files", icon: "📁", label: "Files" },
-  { key: "run", icon: "▶", label: "run" },
-  { key: "chats", icon: "🗪", label: "chats" },
-  { key: "search", icon: "🔍", label: "Search" },
-  { key: "clients", icon: "👥", label: "clients" },
-  { key: "settings", icon: "⚙️", label: "Settings" },
+  { key: "files", icon:  <VscFiles size={"25px"} />, label: "Files" },
+  { key: "run", icon: <FaPlay size={"25px"}/>, label: "Run" },
+  { key: "chats", icon: <BsChatSquareTextFill  size={"25px"}/>, label: "Chats" },
+  { key: "clients", icon: <FaUsers size={"25px"}/>, label: "Clients" },
+  { key: "send", icon: <FaShareAlt size={"25px"}/>, label: "Send" },
+  { key: "settings", icon:<IoSettingsSharp size={"25px"}/>, label: "Settings" },
 ];
 
 const panelContent = {
@@ -51,6 +60,10 @@ export default function Sidebar() {
     else if(activePanel == 'chats'){
       return <Chat/>
     }
+    else if(activePanel == 'settings'){
+      return <Settings/>
+    }
+      
   }
 
   const handleResize = (e) => {
@@ -79,16 +92,15 @@ export default function Sidebar() {
 
       <div className="sidebar-icons">
         <div className="logo">
-          <img src="/" alt="Logo" className="logo-img" />
+          {/* <img src="/" alt="Logo" className="logo-img" /> */}
+         <PiCodeSimpleFill type="regular" size={"30px"} />
         </div>
         
         {panels.map((panel) => {
           return (
             <button
               key={panel.key}
-              className={`sidebar-icon ${
-                activePanel === panel.key ? " active" : ""
-              }`}
+              className={`sidebar-icon ${activePanel === panel.key ? " active" : ""} `}
               onClick={() => handlePanelContent(panel)}
               title={panel.label}
             >

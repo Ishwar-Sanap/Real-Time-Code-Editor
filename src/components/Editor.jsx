@@ -1,25 +1,30 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Codemirror from "codemirror";
 import "codemirror/mode/javascript/javascript";
+import "codemirror/mode/clike/clike";
+import "codemirror/mode/python/python";
 import "codemirror/theme/dracula.css";
+import "codemirror/theme/solarized.css";
+import "codemirror/theme/base16-light.css";
+import "codemirror/theme/eclipse.css";
+import "codemirror/theme/midnight.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/addon/edit/closebrackets";
 import "codemirror/addon/edit/closetag";
+
 import ACTIONS from "../actions";
 import { useSocket } from "../contexts/SocketContext";
 import throttle from "lodash.throttle";
+import { useDispatch, useSelector } from "react-redux";
 
-
-function getRandomColor (){
-
+function getRandomColor() {
   //Hexadecimal color format : #FFFFFF
 
   const letteres = "0123456789ABCDEF";
   let color = "#";
 
-  for(let i = 0; i<6; i++)
-  {
-    let indx = Math.floor((Math.random() * 16));
+  for (let i = 0; i < 6; i++) {
+    let indx = Math.floor(Math.random() * 16);
     color += letteres[indx];
   }
 
@@ -30,6 +35,9 @@ export default function Editor({ roomID, onCodeChange }) {
   const textAreaRef = useRef(null);
   const codeMirrInstance = useRef(null);
   const socketRef = useSocket();
+  const language = useSelector((state) => state.editorSettings.language);
+  const theme = useSelector((state) => state.editorSettings.theme);
+  const fontSize = useSelector((state) => state.editorSettings.fontSize);
 
   const myUserName = sessionStorage.getItem("userName");
   const cursors = {};
@@ -59,7 +67,7 @@ export default function Editor({ roomID, onCodeChange }) {
     tooltip.textContent = userName;
     tooltip.style.position = "absolute";
 
-    if(cursor.line > 0)tooltip.style.top = `-${editor.defaultTextHeight()}px`;
+    if (cursor.line > 0) tooltip.style.top = `-${editor.defaultTextHeight()}px`;
 
     tooltip.style.left = "0";
     tooltip.style.background = color;
@@ -99,8 +107,8 @@ export default function Editor({ roomID, onCodeChange }) {
         codeMirrInstance.current = Codemirror.fromTextArea(
           textAreaRef.current,
           {
-            mode: { name: "javascript", json: true },
-            theme: "dracula",
+            mode: language,
+            theme,
             lineNumbers: true,
             autoCloseBrackets: true,
             autoCloseTags: true,
@@ -114,7 +122,7 @@ export default function Editor({ roomID, onCodeChange }) {
         const code = instance.getValue();
 
         onCodeChange(code); // Call the onCodeChange prop to update the code in the parent component
-        
+
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
             roomID,
@@ -125,18 +133,18 @@ export default function Editor({ roomID, onCodeChange }) {
 
       codeMirrInstance.current.setValue("// Your code goes here..");
       const randomColor = getRandomColor();
-      
+
       codeMirrInstance.current.on(
         "cursorActivity",
-        
+
         // Creates a throttled function that only invokes func at most once per every wait milliseconds.
         throttle((cm) => {
-          const cursor = cm.getCursor();  // it will give the cursor position from editor (line num, character position)
+          const cursor = cm.getCursor(); // it will give the cursor position from editor (line num, character position)
           socketRef.current.emit(ACTIONS.CURSOR_POS_SYNC, {
             userName: myUserName,
             roomID,
             cursor,
-            randomColor
+            randomColor,
           });
 
           // update my own tooltip immediately
@@ -144,10 +152,9 @@ export default function Editor({ roomID, onCodeChange }) {
             codeMirrInstance.current,
             myUserName,
             cursor,
-           randomColor
+            randomColor
           );
         }, 100)
-
       );
     }
 
@@ -166,18 +173,26 @@ export default function Editor({ roomID, onCodeChange }) {
   // This will be called when the server emits the CODE_CHANGE event
   useEffect(() => {
     if (!socketRef.current) return;
-    
+
     socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
       if (code !== null) {
         codeMirrInstance.current.setValue(code);
       }
     });
 
-    socketRef.current.on(ACTIONS.CURSOR_POS_SYNC, ({ userName, cursor, randomColor }) => {
-      if (userName == myUserName) return;
+    socketRef.current.on(
+      ACTIONS.CURSOR_POS_SYNC,
+      ({ userName, cursor, randomColor }) => {
+        if (userName == myUserName) return;
 
-      updateCursorTooltip(codeMirrInstance.current, userName, cursor, randomColor);
-    });
+        updateCursorTooltip(
+          codeMirrInstance.current,
+          userName,
+          cursor,
+          randomColor
+        );
+      }
+    );
 
     // Clean up the event listener on unmount
     return () => {
@@ -187,6 +202,31 @@ export default function Editor({ roomID, onCodeChange }) {
       }
     };
   }, [socketRef.current]); // when socketRef changes, this effect will run again
+
+  useEffect(() => {
+    if (codeMirrInstance.current) {
+      let mode = language;
+      if (language === "c") mode = "text/x-csrc";
+      else if (language === "cpp") mode = "text/x-c++src";
+      else if (language === "java") mode = "text/x-java";
+      else if (language === "javascript") mode = "javascript";
+      else if (language === "python") mode = "python";
+
+      codeMirrInstance.current.setOption("mode", mode);
+    }
+  }, [language]);
+
+  useEffect(() => {
+    if (codeMirrInstance.current) {
+      codeMirrInstance.current.setOption("theme", theme);
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    if (codeMirrInstance.current) {
+      codeMirrInstance.current.getWrapperElement().style.fontSize = fontSize;
+    }
+  }, [fontSize]);
 
   return (
     <>
