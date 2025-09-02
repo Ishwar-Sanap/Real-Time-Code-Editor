@@ -5,7 +5,8 @@ const editorSettingsSlice = createSlice({
     initialState : {
         language : "javascript",
         theme : "dracula",
-        fontSize: "16px"
+        fontSize: "16px",
+        toolTip: true,
     },
 
     reducers:{
@@ -19,10 +20,14 @@ const editorSettingsSlice = createSlice({
 
         setFontSize : (state, action)=>{
             state.fontSize = action.payload;
+        },
+
+        setToolTip : (state, action)=>{
+            state.toolTip = action.payload;
         }
     }
 });
 
-export const {setLanguage, setTheme, setFontSize} = editorSettingsSlice.actions
+export const {setLanguage, setTheme, setFontSize, setToolTip} = editorSettingsSlice.actions
 
 export default editorSettingsSlice.reducer;

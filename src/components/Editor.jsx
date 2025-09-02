@@ -38,18 +38,22 @@ export default function Editor({ roomID, onCodeChange }) {
   const language = useSelector((state) => state.editorSettings.language);
   const theme = useSelector((state) => state.editorSettings.theme);
   const fontSize = useSelector((state) => state.editorSettings.fontSize);
-
+  const cursorToolTip = useSelector((state) => state.editorSettings.toolTip)
+     
   const myUserName = sessionStorage.getItem("userName");
-  const cursors = {};
+  const cursors = useRef({});
+  const cursorToolTipRef = useRef(cursorToolTip);
 
   function updateCursorTooltip(editor, userName, cursor, color) {
+    if(!cursorToolTipRef.current && userName == myUserName)return;
+
     // invalid cursor
     if (!cursor || cursor.line == null || cursor.ch == null) return;
     if (cursor.line === 0 && cursor.ch === 0) return;
 
     // clear old marker
-    if (cursors[userName]?.marker) cursors[userName].marker.clear();
-    if (cursors[userName]?.timeoutId) clearTimeout(cursors[userName].timeoutId);
+    if (cursors.current[userName]?.marker) cursors.current[userName].marker.clear();
+    if (cursors.current[userName]?.timeoutId) clearTimeout(cursors.current[userName].timeoutId);
 
     // container
     const cursorContainer = document.createElement("span");
@@ -92,10 +96,10 @@ export default function Editor({ roomID, onCodeChange }) {
     );
 
     // store marker + timeout
-    cursors[userName] = { marker, timeoutId: null };
+    cursors.current[userName] = { marker, timeoutId: null };
 
     // set timeout to fade tooltip after 3s
-    cursors[userName].timeoutId = setTimeout(() => {
+    cursors.current[userName].timeoutId = setTimeout(() => {
       tooltip.style.opacity = "0"; // fade out
       caret.style.opacity = "0";
     }, 3000);
@@ -228,6 +232,21 @@ export default function Editor({ roomID, onCodeChange }) {
     }
   }, [fontSize]);
 
+useEffect(() => {
+  if (!codeMirrInstance.current) return;
+  cursorToolTipRef.current = cursorToolTip;
+
+  if (!cursorToolTip) {
+    // Remove all tooltip markers
+    Object.values(cursors.current).forEach(({ marker, timeoutId }) => {
+      if (marker) marker.clear();
+      if (timeoutId) clearTimeout(timeoutId);
+    });
+
+    cursors.current = {}
+  }
+
+}, [cursorToolTip]);
   return (
     <>
       <textarea ref={textAreaRef} name="" id="real-time-editor"></textarea>

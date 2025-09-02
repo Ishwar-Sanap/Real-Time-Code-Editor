@@ -1,0 +1,59 @@
+
+.settings-panel {
+  padding: 1rem;
+}
+
+.settings-panel > div {
+  margin-bottom: 1rem;
+}
+
+.my-cursor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settings-panel label {
+  display: block;
+  font-weight: 500;
+  color: #d1d5db;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settings-panel select {
+  width: 100%;
+  padding: 0.6rem;
+  background: #23272e;;
+  border: 2px solid #4b5563;
+  border-radius: 8px;
+  color: #f9fafb;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-panel select:hover {
+  border-color: #667eea;
+  transform: translateY(-1px);
+}
+
+.settings-panel select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.settings-panel input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #667eea;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.settings-panel input[type="checkbox"]:hover {
+  transform: scale(1.1);
+}

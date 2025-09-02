@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setFontSize,
   setLanguage,
   setTheme,
+  setToolTip,
 } from "../../redux/slices/editorSettingsSlice";
+
+import "./Settings.css"
 
 export default function Settings() {
   const language = useSelector((state) => state.editorSettings.language);
   const theme = useSelector((state) => state.editorSettings.theme);
   const fontSize = useSelector((state) => state.editorSettings.fontSize);
+  const toolTip = useSelector((state)=> state.editorSettings.toolTip);
   const dispatch = useDispatch();
 
   console.log("Values from store: ", language, theme, fontSize);
@@ -78,6 +82,11 @@ export default function Settings() {
                 )
               }
             </select>
+          </div>
+
+          <div className="my-cursor">
+            <label htmlFor="">Show my cursor: </label>
+            <input type="checkbox" checked={toolTip} onChange={(e)=> {dispatch(setToolTip(!toolTip))} } />
           </div>
         </div>
       </div>
