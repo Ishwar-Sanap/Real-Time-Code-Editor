@@ -10,6 +10,7 @@ import { FaUsers } from "react-icons/fa6";
 import { IoSettingsSharp } from "react-icons/io5";
 import { FaShareAlt } from "react-icons/fa";
 import Settings from "../settings/Settings";
+import CodeRunner from "../coderunner/CodeRunner";
 
 
 const panels = [
@@ -62,6 +63,9 @@ export default function Sidebar() {
     }
     else if(activePanel == 'settings'){
       return <Settings/>
+    }
+    else if(activePanel == 'run'){
+      return <CodeRunner/>
     }
       
   }
