@@ -16,6 +16,7 @@ import ACTIONS from "../actions";
 import { useSocket } from "../contexts/SocketContext";
 import throttle from "lodash.throttle";
 import { useDispatch, useSelector } from "react-redux";
+import { useCode } from "../contexts/CodeContext";
 
 function getRandomColor() {
   //Hexadecimal color format : #FFFFFF
@@ -31,7 +32,7 @@ function getRandomColor() {
   return color;
 }
 
-export default function Editor({ roomID, onCodeChange }) {
+export default function Editor({ roomID }) {
   const textAreaRef = useRef(null);
   const codeMirrInstance = useRef(null);
   const socketRef = useSocket();
@@ -43,6 +44,7 @@ export default function Editor({ roomID, onCodeChange }) {
   const myUserName = sessionStorage.getItem("userName");
   const cursors = useRef({});
   const cursorToolTipRef = useRef(cursorToolTip);
+  const {codeRef,code, setCode} = useCode();
 
   function updateCursorTooltip(editor, userName, cursor, color) {
     if(!cursorToolTipRef.current && userName == myUserName)return;
@@ -123,14 +125,16 @@ export default function Editor({ roomID, onCodeChange }) {
       //
       codeMirrInstance.current.on("change", (instance, changes) => {
         const { origin } = changes;
-        const code = instance.getValue();
+        const currCode = instance.getValue();
 
-        onCodeChange(code); // Call the onCodeChange prop to update the code in the parent component
+        //onCodeChange(code); // Call the onCodeChange prop to update the code in the parent component
+        codeRef.current = currCode;
+        setCode(codeRef.current);
 
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
             roomID,
-            code,
+            code: currCode,
           });
         }
       });

@@ -16,10 +16,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { addClient , removeClient } from "../redux/slices/clientsSlice";
 import {SocketContext , useSocket} from "../contexts/SocketContext"
 import { MessagesContext } from "../contexts/MessagesContext";
+import { CodeContext } from "../contexts/CodeContext";
 
 export default function EditorPage() {
   const socketRef = useRef(null);
   const codeRef = useRef(null);
+  const [code, setCode] = useState("");
+
   const [messages, setMessages] = useState([])
 
   // useLocation is used to get the state passed from Home component
@@ -150,15 +153,15 @@ export default function EditorPage() {
     <div className="editor-container">
       
       <SocketContext.Provider value={socketRef}>
-
+      <CodeContext.Provider value={{ codeRef,code, setCode}}>
       <MessagesContext.Provider value={{messages , setMessages}}>
         <SideBar/>
       </MessagesContext.Provider>
 
       <div className="editor-panel">
-        <Editor roomID = {roomID} onCodeChange = {(code)=> codeRef.current = code}/>
+        <Editor roomID = {roomID} />
       </div>
-
+      </CodeContext.Provider>
       </SocketContext.Provider>
       {/* <div className="chat-panel">
         <h3>chat goes here</h3>
