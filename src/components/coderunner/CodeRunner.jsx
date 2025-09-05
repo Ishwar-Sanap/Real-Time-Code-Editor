@@ -3,8 +3,27 @@ import "./CodeRunner.css";
 import { useCode } from "../../contexts/CodeContext";
 import { useEffect } from "react";
 import { useRef } from "react";
+import { useSelector } from "react-redux";
 
-const runCode = async (code) => {
+const getFileName = (language) => {
+  switch (language.toLowerCase()) {
+    case "python":
+    case "python3":
+      return "main.py";
+    case "cpp":
+      return "main.cpp";
+    case "c":
+      return "main.c";
+    case "java":
+      return "Main.java";
+    case "javascript":
+      return "main.js";
+    default:
+      return "main.txt";
+  }
+};
+
+const runCode = async (code, language) => {
   try {
     const response = await fetch("https://emkc.org/api/v2/piston/execute", {
       method: "POST",
@@ -12,11 +31,11 @@ const runCode = async (code) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        language: "python3",
-        version: "3.10.0",
+        language,
+        version: "*", // use latest available version..
         files: [
           {
-            name: "main.py",
+            name: getFileName(language),
             content: code,
           },
         ],
@@ -36,7 +55,7 @@ export default function CodeRunner() {
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [codeInputs, setCodeInputs] = useState("");
-
+  const language = useSelector((state) => state.editorSettings.language);
   const { code } = useCode();
 
   const handleRunCode = () => {
@@ -44,7 +63,8 @@ export default function CodeRunner() {
     setOutput("Running...");
 
     // Your API call here
-    const codeOutput = runCode(code);
+    console.log("running code : ", code, language);
+    const codeOutput = runCode(code, language);
 
     setTimeout(() => {
       setOutput(codeOutput);

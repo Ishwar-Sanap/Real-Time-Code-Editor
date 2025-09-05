@@ -23,7 +23,7 @@ export default function Settings() {
     { name: "c", label: "C" },
     { name: "cpp", label: "C++" },
     { name: "java", label: "Java" },
-    { name: "python", label: "Python" },
+    { name: "python3", label: "Python3" },
   ];
 
   const thems = [

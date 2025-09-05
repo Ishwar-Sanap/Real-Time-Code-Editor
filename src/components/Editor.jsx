@@ -129,7 +129,7 @@ export default function Editor({ roomID }) {
 
         //onCodeChange(code); // Call the onCodeChange prop to update the code in the parent component
         codeRef.current = currCode;
-        setCode(codeRef.current);
+        setCode(currCode);
 
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
@@ -218,7 +218,7 @@ export default function Editor({ roomID }) {
       else if (language === "cpp") mode = "text/x-c++src";
       else if (language === "java") mode = "text/x-java";
       else if (language === "javascript") mode = "javascript";
-      else if (language === "python") mode = "python";
+      else if (language === "python3") mode = "python";
 
       codeMirrInstance.current.setOption("mode", mode);
     }

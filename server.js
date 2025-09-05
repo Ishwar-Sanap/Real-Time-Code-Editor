@@ -19,6 +19,9 @@ const userSocketMap = {};
 //Store messages for each room
 const roomMessages = {} // { roomID: [ {text, sender, time}, ... ] }
 
+//Store code for each room
+const roomCodes = {}
+
 // Get all clients in the room and 
 const getConnectedClients = (roomID) => {
  return Array.from(io.sockets.adapter.rooms.get(roomID) || []).map((socketID) => {
@@ -58,16 +61,21 @@ io.on('connection', (socket) => {
 
     //Listen the code change event at the server
     socket.on(ACTIONS.CODE_CHANGE, ({roomID, code}) =>{
-      
+      if(!roomCodes[roomID]) roomCodes[roomID] = [];
+
+      roomCodes[roomID] = code;
+
       //Code change event will be broadcast to all connected clients
       socket.in(roomID).emit(ACTIONS.CODE_CHANGE ,{code})
     })
 
     //Listen for the SYNC_CODE event at the server
-    socket.on(ACTIONS.SYNC_CODE, ({code, socketID}) =>{
+    socket.on(ACTIONS.SYNC_CODE, ({roomID, socketID}) =>{
         //This will emit the SYNC_CODE event to the specific socket
         //This is used to sync the code with the new user who just joined
-        io.to(socketID).emit(ACTIONS.CODE_CHANGE, {code});
+        const codeInEditor = roomCodes[roomID] || "// Your code goes here..";
+
+        io.to(socketID).emit(ACTIONS.CODE_CHANGE, {code : codeInEditor});
     })
 
     socket.on(ACTIONS.CURSOR_POS_SYNC, ({userName,roomID, cursor,randomColor})=>{

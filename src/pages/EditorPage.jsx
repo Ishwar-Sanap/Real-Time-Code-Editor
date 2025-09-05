@@ -95,7 +95,7 @@ export default function EditorPage() {
         dispatch(addClient(clients))
         setLoading(false);
         //When user joins the Room Synch the Code and Messages from server
-        socketRef.current.emit(ACTIONS.SYNC_CODE, {code : codeRef.current, socketID});
+        socketRef.current.emit(ACTIONS.SYNC_CODE, {roomID, socketID});
       });
 
       // Listen for the DISCONNECTED event to remove the client from the list
