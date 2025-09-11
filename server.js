@@ -13,7 +13,6 @@ const io = new Server(server);
 
 
 //This will store the user name of each socket
-//This is a simple in-memory store, for production use a database or persistent store
 const userSocketMap = {};
 
 //Store messages for each room
@@ -99,20 +98,28 @@ io.on('connection', (socket) => {
        io.to(socketID).emit(ACTIONS.CHAT_MSG_SYNC, {messages});
     } )
 
+    //Runs before Socket.IO removes the socket from rooms.
     socket.on('disconnecting', () => {
-
         const rooms = [...socket.rooms];
         rooms.forEach((roomID) => {
-            // Emit the DISCONNECTED event to all clients in the room, so all get notified user has left
-            socket.in(roomID).emit(ACTIONS.DISCONNECTED, {
-                socketID: socket.id,
-                userName: userSocketMap[socket.id],
-            });
+          // Emit the DISCONNECTED event to all clients in the room, so all get notified user has left
+          socket.in(roomID).emit(ACTIONS.DISCONNECTED, {
+            socketID: socket.id,
+            userName: userSocketMap[socket.id],
+          });
+
+          const remaining = ( io.sockets.adapter.rooms.get(roomID)?.size || 0)-1;
+          console.log("remaining user ", remaining);
+          if (remaining === 0) {
+            console.log(`Cleaning up room ${roomID}`);
+            delete roomMessages[roomID];
+            delete roomCodes[roomID];
+          }
         });
 
         delete userSocketMap[socket.id];
-        socket.leave();
     });
+
 });
 
 const PORT = 5000;
