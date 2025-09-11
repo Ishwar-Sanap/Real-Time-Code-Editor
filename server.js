@@ -21,6 +21,8 @@ const roomMessages = {} // { roomID: [ {text, sender, time}, ... ] }
 //Store code for each room
 const roomCodes = {}
 
+const cleanupTimers = {}
+
 // Get all clients in the room and 
 const getConnectedClients = (roomID) => {
  return Array.from(io.sockets.adapter.rooms.get(roomID) || []).map((socketID) => {
@@ -43,6 +45,11 @@ io.on('connection', (socket) => {
         
         //Join the socket to the room
         socket.join(roomID);
+        
+        if(cleanupTimers[roomID]){ 
+          clearTimeout(cleanupTimers[roomID]);
+          delete cleanupTimers[roomID];
+        }
 
         const clients = getConnectedClients(roomID);
 
@@ -99,26 +106,31 @@ io.on('connection', (socket) => {
     } )
 
     //Runs before Socket.IO removes the socket from rooms.
-    socket.on('disconnecting', () => {
-        const rooms = [...socket.rooms];
-        rooms.forEach((roomID) => {
-          // Emit the DISCONNECTED event to all clients in the room, so all get notified user has left
-          socket.in(roomID).emit(ACTIONS.DISCONNECTED, {
-            socketID: socket.id,
-            userName: userSocketMap[socket.id],
-          });
-
-          const remaining = ( io.sockets.adapter.rooms.get(roomID)?.size || 0)-1;
-          console.log("remaining user ", remaining);
-          if (remaining === 0) {
-            console.log(`Cleaning up room ${roomID}`);
-            delete roomMessages[roomID];
-            delete roomCodes[roomID];
-          }
+    socket.on("disconnecting", () => {
+      const rooms = [...socket.rooms];
+      rooms.forEach((roomID) => {
+        // Emit the DISCONNECTED event to all clients in the room, so all get notified user has left
+        socket.in(roomID).emit(ACTIONS.DISCONNECTED, {
+          socketID: socket.id,
+          userName: userSocketMap[socket.id],
         });
-
-        delete userSocketMap[socket.id];
+        const remaining = (io.sockets.adapter.rooms.get(roomID)?.size || 0) - 1;
+        console.log("remaining user ", remaining);
+        if (remaining === 0) {
+          // Delay cleanup by 3s
+          cleanupTimers[roomID] = setTimeout(() => {
+            const stillRemaining = io.sockets.adapter.rooms.get(roomID)?.size || 0;
+            if (stillRemaining === 0) {
+              delete roomMessages[roomID];
+              delete roomCodes[roomID];
+            }
+            delete cleanupTimers[roomID];
+          }, 3000);
+        }
+      });
+      delete userSocketMap[socket.id];
     });
+
 
 });
 
