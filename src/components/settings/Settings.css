@@ -49,11 +49,11 @@
 .settings-panel input[type="checkbox"] {
   width: 1.2rem;
   height: 1.2rem;
-  accent-color: #667eea;
+  accent-color: #2ad63e;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .settings-panel input[type="checkbox"]:hover {
-  transform: scale(1.1);
+  transform: scale(1.3);
 }

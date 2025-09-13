@@ -84,6 +84,12 @@ io.on('connection', (socket) => {
         io.to(socketID).emit(ACTIONS.CODE_CHANGE, {code : codeInEditor});
     })
 
+    socket.on(ACTIONS.UPDATE_PERMISSIONS,({ socketID, newPermission, roomID }) => {
+
+      console.log("update permission listening", newPermission)
+      socket.in(roomID).emit(ACTIONS.DATA_PERMISSIONS, {socketID, newPermission});
+    }
+    );
     socket.on(ACTIONS.CURSOR_POS_SYNC, ({userName,roomID, cursor,randomColor})=>{
         socket.in(roomID).emit(ACTIONS.CURSOR_POS_SYNC, {userName ,cursor,randomColor}) //socket.in(roomID) which emits to all clinets except sender
     })

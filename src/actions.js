@@ -9,8 +9,9 @@ const ACTIONS = {
     CHAT_MSG: "chat-msg",
     SYNC_CHATS: "sync-chats",
     CHAT_MSG_SYNC : "chat-msg-sync",
-    CURSOR_POS_SYNC : "cursor-pos-synch"
-
+    CURSOR_POS_SYNC : "cursor-pos-synch",
+    UPDATE_PERMISSIONS: "update-permissions",
+    DATA_PERMISSIONS : "data-permissions"
 }
 
 export default ACTIONS;

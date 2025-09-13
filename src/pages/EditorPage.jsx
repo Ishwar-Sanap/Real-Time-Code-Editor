@@ -40,20 +40,9 @@ export default function EditorPage() {
 
   // useParams is used to get the roomID from the URL
   const { roomID } = useParams();
+  const myUserName = sessionStorage.getItem("userName");
+  const hostUser = sessionStorage.getItem("hostUser");
 
-  // const [clients, setClinets] = useState([
-  //   { socketID: 1, userName: "User 1" },
-  //   { socketID: 2, userName: "User 2" },
-  //   { socketID: 3, userName: "User 3" },
-  //   { socketID: 4, userName: "User 4" },
-  //   { socketID: 5, userName: "User 5" },
-  //   { socketID: 6, userName: "User 6" },
-  //   { socketID: 7, userName: "User 7" },
-  //   { socketID: 8, userName: "User 8" },
-  //   { socketID: 9, userName: "User 9" },
-  //   { socketID: 10, userName: "User 10" },
-
-  // ]);
   const [loading, setLoading] = useState(true);
 
   const handleErrors = (err) => {
@@ -77,6 +66,7 @@ export default function EditorPage() {
       socketRef.current.emit(ACTIONS.JOIN, {
         roomID,
         userName: location.state?.userName,  //  location.state.userName : is the name of the user who just joined
+        userRole : myUserName === hostUser ? "host" : "guest"
       });
 
       // Listen for the JOINED event to get the list of clients in the room
@@ -102,11 +92,6 @@ export default function EditorPage() {
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketID, userName }) => {  
         toast.error(`${userName} has left the room`);
         dispatch(removeClient(socketID));
-
-        // setClinets((prev) => {
-        //   return prev.filter((client) => client.socketID !== socketID);
-        // });
-
       });
     } catch (err) {
       handleErrors(err);
@@ -163,9 +148,6 @@ export default function EditorPage() {
       </div>
       </CodeContext.Provider>
       </SocketContext.Provider>
-      {/* <div className="chat-panel">
-        <h3>chat goes here</h3>
-      </div> */}
     </div>
   );
 }

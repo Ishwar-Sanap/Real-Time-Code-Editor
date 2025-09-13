@@ -8,6 +8,8 @@ import {
 } from "../../redux/slices/editorSettingsSlice";
 
 import "./Settings.css"
+import HostPermissions from "../permissions/HostPermissions";
+import GuestPermissions from "../permissions/GuestPermissions";
 
 export default function Settings() {
   const language = useSelector((state) => state.editorSettings.language);
@@ -16,6 +18,9 @@ export default function Settings() {
   const toolTip = useSelector((state)=> state.editorSettings.toolTip);
   const dispatch = useDispatch();
 
+  const myUserName = sessionStorage.getItem("userName");
+  const hostUser = sessionStorage.getItem("hostUser") ;
+  const isHostUser = myUserName === hostUser;
   console.log("Values from store: ", language, theme, fontSize);
 
   const languages = [
@@ -48,11 +53,11 @@ export default function Settings() {
               value={language}
               onChange={(e) => dispatch(setLanguage(e.target.value))}
             >
-              {languages.map((language, indx) => 
+              {languages.map((language, indx) => (
                 <option value={language.name} key={indx}>
                   {language.label}
                 </option>
-              )}
+              ))}
             </select>
           </div>
 
@@ -76,18 +81,27 @@ export default function Settings() {
               value={fontSize}
               onChange={(e) => dispatch(setFontSize(e.target.value))}
             >
-              {
-                fontSizes.map((fontSize, indx)=>
-                  <option value={`${fontSize}px`} key={indx}> {` ${fontSize}px`} </option>
-                )
-              }
+              {fontSizes.map((fontSize, indx) => (
+                <option value={`${fontSize}px`} key={indx}>
+                  {" "}
+                  {` ${fontSize}px`}{" "}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="my-cursor">
             <label htmlFor="">Show my cursor: </label>
-            <input type="checkbox" checked={toolTip} onChange={(e)=> {dispatch(setToolTip(!toolTip))} } />
+            <input
+              type="checkbox"
+              checked={toolTip}
+              onChange={(e) => {
+                dispatch(setToolTip(!toolTip));
+              }}
+            />
           </div>
+
+          {isHostUser ? (<HostPermissions/>) : (<GuestPermissions/>)}
         </div>
       </div>
     </div>

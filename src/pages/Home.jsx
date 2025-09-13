@@ -4,11 +4,13 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 
+let isHostUser = false;
+
 export default function Home() {
   const [roomID, setRoomID] = useState(sessionStorage.getItem("roomID") || "");
   const [userName, setUserName] = useState(sessionStorage.getItem("userName") || "");
   const navigate = useNavigate();
-
+  
   const createNewRoom = (e) => {
     e.preventDefault();
 
@@ -16,6 +18,9 @@ export default function Home() {
     setRoomID(id);
 
     toast.success("New Room Created");
+
+    //User who creates the room will be the Host..
+    isHostUser = true;
   };
 
   const joinRoom = (e) => {
@@ -27,6 +32,8 @@ export default function Home() {
     //Store user name and room ID in session storage so, when you came back to home page values can be restored.
     sessionStorage.setItem("userName", userName);
     sessionStorage.setItem("roomID", roomID);
+
+    if(isHostUser)sessionStorage.setItem("hostUser", userName);
 
     //Redirect to the editor page with roomID
     navigate(`/editor/${roomID}`, {

@@ -51,14 +51,59 @@ const runCode = async (code, language) => {
   }
 };
 
+function showPopUpTooltip(message) {
+  const tooltip = document.createElement("div");
+  tooltip.innerText = message;
+
+  // Inline CSS
+  Object.assign(tooltip.style, {
+    position: "fixed",
+    top: "30px",
+    right: "30px",
+    background: "rgba(242, 24, 24, 0.9)",
+    color: "#fff",
+    padding: "8px 16px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "bold",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+    zIndex: "9999",
+    opacity: "0",
+    transition: "opacity 0.3s ease",
+  });
+
+  document.body.appendChild(tooltip);
+
+  // Fade in
+  requestAnimationFrame(() => {
+    tooltip.style.opacity = "1";
+  });
+
+  // Fade out + remove
+  setTimeout(() => {
+    tooltip.style.opacity = "0";
+    setTimeout(() => tooltip.remove(), 300); // wait for fade-out
+  }, 2000);
+}
+
 export default function CodeRunner() {
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [codeInputs, setCodeInputs] = useState("");
   const language = useSelector((state) => state.editorSettings.language);
   const { code } = useCode();
+  const users = useSelector((state)=> state.connectedClients.clients);
+  const myUserName = sessionStorage.getItem("userName");
 
   const handleRunCode = () => {
+
+    const me = users.find(u => u.userName === myUserName);
+    if (me && me.permission && !me.permission.execute) 
+    {
+      showPopUpTooltip("🚫 You don't have permission to run the code");
+      return;
+    }
+
     setIsRunning(true);
     setOutput("Running...");
 
