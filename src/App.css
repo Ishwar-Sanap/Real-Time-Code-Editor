@@ -138,6 +138,25 @@
   margin-top: 5px;
 }
 
+.host-badge {
+  position: absolute;
+  top: -18px;
+  left: 5%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  color: #f7c948; 
+  z-index: 2;
+  background: #23272e;
+  border-radius: 50%;
+  padding: 2px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+.client {
+  position: relative;
+  margin: 0 10px 20px 0;
+}
+
 .action-btns {
   margin-top: auto;
   margin-bottom: 20px;

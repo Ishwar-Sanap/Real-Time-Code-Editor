@@ -3,6 +3,7 @@ import Avatar from "react-avatar";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { FaCrown } from "react-icons/fa";
 
 export default function Clients() {
   const { roomID } = useParams();
@@ -10,6 +11,7 @@ export default function Clients() {
 
   const connectedClients = useSelector((state)=> state.connectedClients.clients); //get connected clinets from store
   console.log("clinets in Clinet comp : ", connectedClients);
+  const hostUser = sessionStorage.getItem("hostUser");
 
   async function handleCopyRoomID() {
     try {
@@ -33,6 +35,11 @@ export default function Clients() {
       <div className="client-list">
         {connectedClients.map((client) => (
           <div className="client" key={client.socketID}>
+            {client.role === "host" && (
+              <span className="host-badge" title="Host">
+                <FaCrown />
+              </span>
+            )}
             <Avatar name={client.userName} size={50} round="15px" />
             <span className="client-name">{client.userName}</span>
           </div>
