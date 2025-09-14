@@ -15,6 +15,8 @@ const io = new Server(server);
 //This will store the user name of each socket
 const userSocketMap = {};
 
+const allClients = {}; //{ roomID: [ {socketID, userName, ...}, ... ] }
+
 //Store messages for each room
 const roomMessages = {} // { roomID: [ {text, sender, time}, ... ] }
 
@@ -23,26 +25,27 @@ const roomCodes = {}
 
 const cleanupTimers = {}
 
-// Get all clients in the room and 
-const getConnectedClients = (roomID) => {
- return Array.from(io.sockets.adapter.rooms.get(roomID) || []).map((socketID) => {
-    return {
-      socketID,
-      userName: userSocketMap[socketID],
-    };
-  });
-
-}
-
 //Event listener for socket connection, when a new socket connects event is triggered
 io.on('connection', (socket) => {
-    console.log(`new socket is connected: ${socket}`);
-    console.log(`Socket connected: ${socket.id}`); 
 
     //When a user joins a room, we listen for the JOIN event at the server
-    socket.on(ACTIONS.JOIN, ({roomID, userName})=>{
+    socket.on(ACTIONS.JOIN, ({roomID, userName, userRole})=>{
         userSocketMap[socket.id] = userName;
         
+        if(!allClients[roomID]) allClients[roomID] = []
+
+        const defaultPermission =
+          userRole === "host"
+            ? { read: true, write: true, execute: true }
+            : { read: true, write: false, execute: false };
+
+        allClients[roomID].push({
+          socketID: socket.id,
+          userName,
+          role: userRole,
+          permission: defaultPermission,
+        })
+
         //Join the socket to the room
         socket.join(roomID);
         
@@ -51,18 +54,11 @@ io.on('connection', (socket) => {
           delete cleanupTimers[roomID];
         }
 
-        const clients = getConnectedClients(roomID);
-
-        clients.forEach(({socketID})=>{
-
-          // Emit the JOINED event to all clients in the room, so all get notified new user has joined  
-          io.to(socketID).emit(ACTIONS.JOINED, {
-                clients,
-                userName,  // userName : is the name of the user who just joined
-                socketID: socket.id, // socket.id : the id of the socket that just joined
-            });
-        });
-
+        allClients[roomID].forEach((client)=>{
+           io.to(client.socketID).emit(ACTIONS.JOINED, {
+              clients:allClients[roomID], userName, socketID: socket.id,
+           })
+        })
     })
 
     //Listen the code change event at the server
@@ -85,8 +81,12 @@ io.on('connection', (socket) => {
     })
 
     socket.on(ACTIONS.UPDATE_PERMISSIONS,({ socketID, newPermission, roomID }) => {
+      const roomClients = allClients[roomID] || [];
+    
+      // get reference to the client who's permission want to update
+      const reqClient = roomClients.find((clinet) => clinet.socketID === socketID); 
+      if(reqClient) reqClient.permission = {...reqClient.permission, ...newPermission};
 
-      console.log("update permission listening", newPermission)
       socket.in(roomID).emit(ACTIONS.DATA_PERMISSIONS, {socketID, newPermission});
     }
     );
@@ -121,7 +121,6 @@ io.on('connection', (socket) => {
           userName: userSocketMap[socket.id],
         });
         const remaining = (io.sockets.adapter.rooms.get(roomID)?.size || 0) - 1;
-        console.log("remaining user ", remaining);
         if (remaining === 0) {
           // Delay cleanup by 3s
           cleanupTimers[roomID] = setTimeout(() => {
@@ -134,7 +133,17 @@ io.on('connection', (socket) => {
           }, 3000);
         }
       });
+
       delete userSocketMap[socket.id];
+
+      Object.keys(allClients).forEach((roomID) => {
+        allClients[roomID] = allClients[roomID].filter(
+          (client) => client.socketID !== socket.id
+        );
+        // delete the room if empty:
+        if (allClients[roomID].length === 0) delete allClients[roomID];
+      });
+
     });
 
 

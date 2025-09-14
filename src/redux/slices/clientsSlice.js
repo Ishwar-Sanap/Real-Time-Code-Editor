@@ -7,16 +7,8 @@ const clientsSlice = createSlice({
     },
     reducers:{
         addClient : (state, action) =>{
-            //In action.payload you will recieve the array of all clients so push one by one into clients
-            state.clients = []
-            const connectedClients = action.payload;
-            connectedClients.forEach(client => {
-                const permission =  { read: true, write: false, execute: false };
-                client = {...client , permission};
-                state.clients.push(client);
-            });
-
-            console.log("connected all clients", state.clients)
+            //In action.payload you will recieve the array of all updated clients so update the state.clients
+            state.clients = action.payload;
         },
 
         //For remove client, you will recieve the SOCKET_ID in action.payload
@@ -38,8 +30,6 @@ const clientsSlice = createSlice({
                 client.socketID === socketID ? {...client, permission: {...client.permission, ...newPermission }}
                 : client
             )
-
-            console.log("updated permission in slice : ", state.clients);
         }
     }
 })
