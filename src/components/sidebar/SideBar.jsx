@@ -36,7 +36,7 @@ export default function Sidebar() {
 
   const startResize = (e) => {
     isResizing.current = true;
-    document.body.style.cursor = "col-resize";
+    document.body.style.cursor = "e-resize";
     sidebarRef.current.classList.add("resizing");
   };
 

@@ -7,27 +7,23 @@
 
 /* Home page style */
 .home-container {
+  min-height: 100vh;
+  width: 100vw;
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  background: linear-gradient(rgba(40,42,54,0.25), rgba(40,32,24,0.45)), url("./assets/code-editor-home.png") center center/cover no-repeat;
 }
 
 .form-container {
-  background: #282a36;
-  padding: 20px;
-  border-radius: 10px;
-  width: 400px;
-  max-width: 90%;
+  background: rgba(40,42,54,0.98);
+  padding: 32px 28px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(149, 117, 117, 0.25);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 16px;
+  margin-left: 50px;
 }
-
-/* .home-container{
-  width: 50%;
-}
-.home-img{
- width: 50%;
- height: 50%;
-} */
 
 .input-group {
   display: flex;
@@ -36,9 +32,9 @@
 
 .input-field {
   padding: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   background: #eee;
   color: #282a36;
   font-weight: bolder;
@@ -154,7 +150,6 @@
 }
 .client {
   position: relative;
-  margin: 0 10px 20px 0;
 }
 
 .action-btns {

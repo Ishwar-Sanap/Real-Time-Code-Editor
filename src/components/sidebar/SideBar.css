@@ -67,5 +67,6 @@ will be set to none no matter what other transition rules exist for .sidebar-pan
   z-index: 10;
 }
 .sidebar-resizer:hover {
-  background: #555454;
+  background: #7484ef;
+  cursor:e-resize;
 }

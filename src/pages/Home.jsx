@@ -54,12 +54,8 @@ export default function Home() {
     <div>
       <div className="home-container" >
         
-         {/* <div className="home-img-container">
-          <img className="home-img" src="../public/home_page.png" alt="Home Page" />
-        </div> */}
-
         <div className="form-container" >
-          <img src="./" alt="Real time code synch up" />
+          <h2>Real Time Code Collaboration ✨</h2>
 
           <h4>Paste Invitation Room ID</h4>
 
