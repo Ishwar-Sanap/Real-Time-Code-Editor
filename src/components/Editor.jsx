@@ -123,7 +123,7 @@ export default function Editor({ roomID }) {
     tooltip.style.transition = "opacity 0.5s ease";
     tooltip.style.opacity = "1";
 
-    cursorContainer.appendChild(caret);
+    // cursorContainer.appendChild(caret);
     cursorContainer.appendChild(tooltip);
 
     // add marker

@@ -23,7 +23,8 @@ const getFileName = (language) => {
   }
 };
 
-const runCode = async (code, language) => {
+let codeRunSuccess = true;
+const runCode = async (code, codeInputs, language) => {
   try {
     const response = await fetch("https://emkc.org/api/v2/piston/execute", {
       method: "POST",
@@ -33,6 +34,7 @@ const runCode = async (code, language) => {
       body: JSON.stringify({
         language,
         version: "*", // use latest available version..
+        stdin:codeInputs,
         files: [
           {
             name: getFileName(language),
@@ -43,11 +45,9 @@ const runCode = async (code, language) => {
     });
 
     const result = await response.json();
-    // console.log(result.run.output);
-    return result.run.output;
+    return {stdErr: result.run.stderr, codeOutPut : result.run.output};
   } catch (err) {
-    // console.log("Error: " + err.message);
-    return err.message;
+    return {stdErr: err.message , codeOutPut : err.message};
   }
 };
 
@@ -89,30 +89,31 @@ function showPopUpTooltip(message) {
 export default function CodeRunner() {
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
+  const [codeRunResult , setCodeRunResult]= useState(true);
   const [codeInputs, setCodeInputs] = useState("");
   const language = useSelector((state) => state.editorSettings.language);
   const { code } = useCode();
   const users = useSelector((state)=> state.connectedClients.clients);
   const myUserName = sessionStorage.getItem("userName");
 
-  const handleRunCode = () => {
-
-    const me = users.find(u => u.userName === myUserName);
-    if (me && me.permission && !me.permission.execute) 
-    {
+  const handleRunCode = async () => {
+    const me = users.find((u) => u.userName === myUserName);
+    if (me && me.permission && !me.permission.execute) {
       showPopUpTooltip("🚫 You don't have permission to run the code");
       return;
     }
 
     setIsRunning(true);
     setOutput("Running...");
-
+    setCodeRunResult(true);
     // Your API call here
-    console.log("running code : ", code, language);
-    const codeOutput = runCode(code, language);
+    const {stdErr, codeOutPut } = await runCode(code,codeInputs,language);
 
     setTimeout(() => {
-      setOutput(codeOutput);
+  
+      if (stdErr) setCodeRunResult(false);
+
+      setOutput(codeOutPut);
       setIsRunning(false);
     }, 1000);
   };
@@ -147,7 +148,7 @@ export default function CodeRunner() {
 
       <div className="output-box">
         <h4>Code Output</h4>
-        <div className="code-output">{output}</div>
+        <div className={`code-output ${codeRunResult === true ? " success" : " failure"}`}>{output}</div>
         <button className="btn clear-btn" onClick={() => setOutput("")}>
           Clear Output
         </button>

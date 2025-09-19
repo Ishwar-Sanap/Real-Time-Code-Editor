@@ -98,3 +98,9 @@
   white-space: pre-wrap;
   overflow: auto;
 }
+.success{
+  color: rgb(78, 248, 78);
+}
+.failure{
+  color: rgb(240, 35, 35);
+}
