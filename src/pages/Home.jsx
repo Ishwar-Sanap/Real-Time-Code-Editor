@@ -1,16 +1,19 @@
-import {useState} from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import { FaCrown } from "react-icons/fa";
 
 let isHostUser = false;
 
 export default function Home() {
   const [roomID, setRoomID] = useState(sessionStorage.getItem("roomID") || "");
-  const [userName, setUserName] = useState(sessionStorage.getItem("userName") || "");
+  const [userName, setUserName] = useState(
+    sessionStorage.getItem("userName") || ""
+  );
   const navigate = useNavigate();
-  
+
   const createNewRoom = (e) => {
     e.preventDefault();
 
@@ -33,7 +36,7 @@ export default function Home() {
     sessionStorage.setItem("userName", userName);
     sessionStorage.setItem("roomID", roomID);
 
-    if(isHostUser)sessionStorage.setItem("hostUser", userName);
+    if (isHostUser) sessionStorage.setItem("hostUser", userName);
 
     //Redirect to the editor page with roomID
     navigate(`/editor/${roomID}`, {
@@ -42,19 +45,18 @@ export default function Home() {
       },
     });
   };
-  
-  const handleInputEnter = (e)=>{
+
+  const handleInputEnter = (e) => {
     // Check if the key pressed is Enter
-    if(e.key == "Enter"){
+    if (e.key == "Enter") {
       joinRoom(e);
     }
-  }
+  };
 
   return (
     <div>
-      <div className="home-container" >
-        
-        <div className="form-container" >
+      <div className="home-container">
+        <div className="form-container">
           <h2>Real Time Code Collaboration ✨</h2>
 
           <h4>Paste Invitation Room ID</h4>
@@ -74,27 +76,26 @@ export default function Home() {
               className="input-field"
               onChange={(e) => setUserName(e.target.value)}
               value={userName}
-               onKeyUp={handleInputEnter}
+              onKeyUp={handleInputEnter}
             />
             <button onClick={joinRoom} className="btn join-btn">
               Join
             </button>
 
             <span className="create-info">
-              If you don't have an invite then create a new room
+              If you don't have an invite then create room as  
               <a
                 onClick={createNewRoom}
                 className="new-room-btn"
                 href="/editor/new"
               >
-                Here
+                Host<span className="home-page-crown" title="Host">
+                  <FaCrown />
+                </span>
               </a>
             </span>
-
           </div>
-
         </div>
-    
       </div>
     </div>
   );

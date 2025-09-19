@@ -14,19 +14,11 @@ import CodeRunner from "../coderunner/CodeRunner";
 
 
 const panels = [
-  { key: "files", icon:  <VscFiles size={"25px"} />, label: "Files" },
   { key: "run", icon: <FaPlay size={"25px"}/>, label: "Run" },
   { key: "chats", icon: <BsChatSquareTextFill  size={"25px"}/>, label: "Chats" },
   { key: "clients", icon: <FaUsers size={"25px"}/>, label: "Clients" },
-  { key: "send", icon: <FaShareAlt size={"25px"}/>, label: "Send" },
   { key: "settings", icon:<IoSettingsSharp size={"25px"}/>, label: "Settings" },
 ];
-
-const panelContent = {
-  files: <div>File Explorer Content</div>,
-  search: <div>Search Content</div>,
-  settings: <div>Settings Content</div>,
-};
 
 export default function Sidebar() {
   const [activePanel, setActivePanel] = useState();
@@ -98,6 +90,7 @@ export default function Sidebar() {
         <div className="logo">
           {/* <img src="/" alt="Logo" className="logo-img" /> */}
          <PiCodeSimpleFill type="regular" size={"30px"} />
+         
         </div>
         
         {panels.map((panel) => {
