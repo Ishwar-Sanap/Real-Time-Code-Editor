@@ -104,3 +104,9 @@
 .failure{
   color: rgb(240, 35, 35);
 }
+
+@media (max-width: 700px) {
+ .code-output {
+   height: 25vh;  
+ }
+}

@@ -2,16 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import Clients from "../Clients";
 import "./SideBar.css";
 import Chat from "../chats/Chat";
-import { PiCodeSimpleFill } from "react-icons/pi";
-import { VscFiles } from "react-icons/vsc";
 import { FaPlay } from "react-icons/fa";
 import { BsChatSquareTextFill  } from "react-icons/bs";
 import { FaUsers } from "react-icons/fa6";
 import { IoSettingsSharp } from "react-icons/io5";
-import { FaShareAlt } from "react-icons/fa";
 import Settings from "../settings/Settings";
 import CodeRunner from "../coderunner/CodeRunner";
-
+import logo from "../../assets/logo.png";
 
 const panels = [
   { key: "run", icon: <FaPlay size={"25px"}/>, label: "Run" },
@@ -40,7 +37,7 @@ export default function Sidebar() {
 
   const handlePanelContent = (panel) => {
     // if the clicked panel is already active, close it
-    if (activePanel === panel.key) {
+    if (panel === "CodeEditor" || activePanel === panel.key) {
       setActivePanel(null);
     }
     // else set the clicked panel as active
@@ -84,13 +81,9 @@ export default function Sidebar() {
 
   return (
     <div className="sidebar-container">
-      
-
       <div className="sidebar-icons">
         <div className="logo">
-          {/* <img src="/" alt="Logo" className="logo-img" /> */}
-         <PiCodeSimpleFill type="regular" size={"30px"} />
-         
+          <img src={logo} alt="Logo" className="sidebar-logo-img" onClick={()=> handlePanelContent("CodeEditor")} />
         </div>
         
         {panels.map((panel) => {
@@ -108,7 +101,7 @@ export default function Sidebar() {
       </div>
 
       <div
-        className="sidebar-panel"
+        className={`sidebar-panel ${activePanel? " panel-active" : " " }`}
         ref={sidebarRef}
         style={{
           width: activePanel ? width : 0,

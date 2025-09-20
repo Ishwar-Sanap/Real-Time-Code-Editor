@@ -29,12 +29,10 @@ export default function EditorPage() {
   const location = useLocation();
 
   const connectedClients = useSelector((state) => state.connectedClients.clients) //Get the state from store..
-  console.log("connectedClients : ", connectedClients)
 
   const dispatch = useDispatch(); //returns — The dispatch function from the Redux store.
 
 
-  console.log("userName : ", location.state?.userName);
   // useNavigate is used to navigate to different routes
   const reactNavigator = useNavigate();
 
@@ -46,7 +44,6 @@ export default function EditorPage() {
   const [loading, setLoading] = useState(true);
 
   const handleErrors = (err) => {
-    console.log("Socket Error", err);
     toast.error("Socket connection failed, try again later!");
     setLoading(false);
     reactNavigator("/");
@@ -73,7 +70,6 @@ export default function EditorPage() {
       socketRef.current.on(ACTIONS.JOINED, ({ clients, userName, socketID }) => {
         //If new user joined the room, show a toast notification to all clients
         // except the user who currently joined
-        console.log(`${userName} has joined the room`);
 
         if (userName !== location.state?.userName) {
           toast.success(`${userName} has joined the room`);
@@ -81,7 +77,6 @@ export default function EditorPage() {
 
         // Update the clients list state, on UI
         // setClinets(clients); // commented for testing
-        console.log("Dispatching the clients :", clients);
         dispatch(addClient(clients))
         setLoading(false);
         //When user joins the Room Synch the Code and Messages from server
@@ -100,8 +95,6 @@ export default function EditorPage() {
 
   useEffect(() => {
     setLoading(true);
-    console.log("EditorPage mounted");
-    
     init();
 
     // Clean up the socket connection on unmount
@@ -115,7 +108,6 @@ export default function EditorPage() {
         socketRef.current.off("connect_failed");
         socketRef.current.disconnect();
         socketRef.current = null;
-        console.log("Socket disconnected");
       }
 
     };

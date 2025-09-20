@@ -21,7 +21,6 @@ export default function Settings() {
   const myUserName = sessionStorage.getItem("userName");
   const hostUser = sessionStorage.getItem("hostUser") ;
   const isHostUser = myUserName === hostUser;
-  console.log("Values from store: ", language, theme, fontSize);
 
   const languages = [
     { name: "javascript", label: "JavaScript" },

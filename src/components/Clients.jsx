@@ -10,7 +10,6 @@ export default function Clients() {
   const reactNavigator = useNavigate();
 
   const connectedClients = useSelector((state)=> state.connectedClients.clients); //get connected clinets from store
-  console.log("clinets in Clinet comp : ", connectedClients);
   const hostUser = sessionStorage.getItem("hostUser");
 
   async function handleCopyRoomID() {
@@ -23,7 +22,6 @@ export default function Clients() {
   }
 
   function handleLeaveRoom() {
-    console.log("Leaving room:", roomID);
     // Navigate back to Home page
     reactNavigator("/");
   }

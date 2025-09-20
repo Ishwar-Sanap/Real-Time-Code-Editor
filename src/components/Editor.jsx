@@ -239,7 +239,6 @@ export default function Editor({ roomID }) {
     );
 
     socketRef.current.on(ACTIONS.DATA_PERMISSIONS, ({socketID, newPermission})=>{
-      console.log("listennig for data permissions")
        dispatch(updatePermission({socketID , newPermission}));
     })
 

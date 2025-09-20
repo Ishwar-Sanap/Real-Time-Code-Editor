@@ -10,7 +10,6 @@ export default function HostPermissions() {
   const users = useSelector((state) => state.connectedClients.clients);
   const dispatch = useDispatch();
 
-  console.log("users in permissions", users);
   const socketRef = useSocket();
   const { roomID } = useParams();
 

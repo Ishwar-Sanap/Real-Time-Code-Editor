@@ -14,6 +14,17 @@
   border-right: 1px solid #868686;
 }
 
+.logo {
+  border-bottom: 2px solid #a6a3a3;
+  padding-bottom: 10px;
+}
+.sidebar-logo-img{
+  width: 40px;
+  border-radius: 50%;
+}
+.sidebar-logo-img:hover{
+  cursor: pointer;
+}
 .sidebar-icon {
   background: none;
   border: none;
@@ -69,4 +80,57 @@ will be set to none no matter what other transition rules exist for .sidebar-pan
 .sidebar-resizer:hover {
   background: #7484ef;
   cursor:e-resize;
+}
+
+/* Mobile (up to 700px) */
+@media (max-width: 700px) {
+  .sidebar-container {
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .sidebar-icons {
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100vw;
+    height: 60px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: 1px solid #868686;
+    padding: 0;
+    z-index: 20;
+    background: #23272e;
+  }
+
+  .panel-active {
+    position: fixed;
+    left: 0;
+    bottom: 65px;
+    width: 100% !important; 
+    max-width: 100% !important; 
+    min-width: 0 !important; 
+    height: 93vh;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    box-sizing: border-box;
+  }
+
+  .sidebar-panel-content {
+    flex: 1;
+    padding: 16px;
+    color: #fff;
+    overflow-y: auto;
+  }
+
+  .sidebar-resizer {
+    display: none;
+  }
+
+  .logo{
+    border: none;
+  }
 }

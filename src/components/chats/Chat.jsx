@@ -22,12 +22,10 @@ export default function Chat() {
   useEffect(() => {
     if (!socketRef.current) return;
     
-    console.log("Reciving messages from server : ");
 
     //Listen for new chat messages
     socketRef.current.on(ACTIONS.CHAT_MSG, ({ text, sender, time }) => {
       const newMsg = { text, sender, time };
-      console.log(newMsg);
       setMessages((prev) => [...prev, newMsg]);
     });
 
