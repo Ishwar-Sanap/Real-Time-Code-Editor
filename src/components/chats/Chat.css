@@ -42,6 +42,22 @@
   color: black;
 }
 
+.typing-indicator {
+  font-size: 14px;
+  font-style: italic;
+  margin: 5px 0;
+  padding: 4px 8px;
+  display: inline-block;
+  border-radius: 12px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
 .chat-input {
   display: flex;
   gap: 6px;

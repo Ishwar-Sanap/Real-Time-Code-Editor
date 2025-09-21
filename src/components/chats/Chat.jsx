@@ -13,6 +13,8 @@ export default function Chat() {
   const userName = location.state?.userName;
   const { roomID } = useParams();
   const socketRef = useSocket();
+  const [usersTyping, setUsersTyping] = useState([]);
+  const typingTimeoutRef = useRef(null);
 
   // Scroll to bottom when new message is added
   useEffect(() => {
@@ -34,6 +36,15 @@ export default function Chat() {
       setMessages(messages);
     });
 
+    //listening for user type
+    socketRef.current.on(ACTIONS.USER_TYPING, ({userName})=>{
+      setUsersTyping((prev)=> prev.includes(userName) ? prev : [...prev, userName]);
+    })
+
+    //Listening for user stop type
+    socketRef.current.on(ACTIONS.USER_STOP_TYPING, ({userName})=>{
+      setUsersTyping((prev)=> prev.filter((user)=> user != userName));
+    })
     //After listeners are attached, request chat synch
     socketRef.current.emit(ACTIONS.SYNC_CHATS, {roomID ,socketID: socketRef.current.id});
 
@@ -43,6 +54,8 @@ export default function Chat() {
       
       socketRef.current.off(ACTIONS.CHAT_MSG);
       socketRef.current.off(ACTIONS.CHAT_MSG_SYNC);
+      socketRef.current.off(ACTIONS.USER_TYPING);
+      socketRef.current.off(ACTIONS.USER_STOP_TYPING);
     };
   }, []);
 
@@ -63,6 +76,23 @@ export default function Chat() {
     socketRef.current.emit(ACTIONS.CHAT_MSG, newMsg);
   };
 
+  const handleMessageType = (e)=>{
+    setMessage(e.target.value)
+    // console.log(userName, "is typing..");
+
+    socketRef.current.emit(ACTIONS.USER_TYPING, {roomID,userName})
+
+    if(typingTimeoutRef.current){
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    //If user have not type 2Sec, then stop user typing
+    typingTimeoutRef.current = setTimeout(()=>{
+      socketRef.current.emit(ACTIONS.USER_STOP_TYPING, {roomID, userName});
+    },2000)
+
+  }
+
   return (
     <div className="chat-container">
       <h3 className="panel-heading">Group Chats</h3>
@@ -73,7 +103,9 @@ export default function Chat() {
           <div
             key={idx}
             className={`chat-message ${
-              msg.sender === userName ? "chat-message-you" : "chat-message-other"
+              msg.sender === userName
+                ? "chat-message-you"
+                : "chat-message-other"
             }`}
           >
             {msg.text}
@@ -88,8 +120,15 @@ export default function Chat() {
         ))}
 
         <div ref={messagesEndRef}></div>
-        
       </div>
+
+      {/* users typing indicator */}
+      {usersTyping.length > 0 && (
+        <div className="typing-indicator">
+          {usersTyping.join(", ")} {usersTyping.length === 1 ? "is" : "are"}{" "}
+          typing...
+        </div>
+      )}
 
       {/* Input */}
       <div className="chat-input">
@@ -97,7 +136,7 @@ export default function Chat() {
           type="text"
           placeholder="Type a message..."
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleMessageType}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         <button onClick={sendMessage}>Send</button>

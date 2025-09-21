@@ -111,6 +111,14 @@ io.on('connection', (socket) => {
        io.to(socketID).emit(ACTIONS.CHAT_MSG_SYNC, {messages});
     } )
 
+    socket.on(ACTIONS.USER_TYPING, ({roomID, userName})=>{
+      socket.in(roomID).emit(ACTIONS.USER_TYPING, {userName})
+    })
+
+    socket.on(ACTIONS.USER_STOP_TYPING, ({roomID, userName})=>{
+      socket.in(roomID).emit(ACTIONS.USER_STOP_TYPING, {userName})
+    })
+    
     //Runs before Socket.IO removes the socket from rooms.
     socket.on("disconnecting", () => {
       const rooms = [...socket.rooms];
