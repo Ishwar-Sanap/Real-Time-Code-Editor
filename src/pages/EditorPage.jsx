@@ -11,7 +11,7 @@ import {
 } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Spinner from "../components/Spinner";
-import SideBar from "../components/SideBar/Sidebar";
+import SideBar from "../components/sidebar/SideBar";
 import { useDispatch, useSelector } from "react-redux";
 import { addClient , removeClient } from "../redux/slices/clientsSlice";
 import {SocketContext , useSocket} from "../contexts/SocketContext"
