@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server:dev": "nodemon server.js",
-    "server:prod": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",

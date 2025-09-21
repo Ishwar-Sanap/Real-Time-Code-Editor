@@ -3,7 +3,7 @@ const app = express();
 import { createServer, get } from 'http';
 import { Server } from 'socket.io';
 import ACTIONS from './src/actions.js';
-
+import path  from 'path';
 //Create an Express server
 const server = createServer(app);
 
@@ -158,6 +158,15 @@ io.on('connection', (socket) => {
 });
 
 const PORT = 5000;
+const dirname = path.resolve();
+app.use(express.static(path.join(dirname, 'dist')));
+
+const INDEX_HTML = path.join(dirname, 'dist', 'index.html')
+
+app.get("/{*splat}", (req,res)=>{
+  res.sendFile(INDEX_HTML)
+})
+
 
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
