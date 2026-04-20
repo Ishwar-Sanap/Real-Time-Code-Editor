@@ -6,7 +6,7 @@ const clientsSlice = createSlice({
         clients : []
     },
     reducers:{
-        addClient : (state, action) =>{
+        setClient : (state, action) =>{
             //In action.payload you will recieve the array of all updated clients so update the state.clients
             state.clients = action.payload;
         },
@@ -35,7 +35,7 @@ const clientsSlice = createSlice({
 })
 
 //Export actions
-export const {addClient , removeClient ,updatePermission}  = clientsSlice.actions;
+export const {setClient , removeClient ,updatePermission}  = clientsSlice.actions;
 
 //Export reducer to put in store
 export default clientsSlice.reducer;

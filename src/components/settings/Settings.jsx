@@ -19,8 +19,9 @@ export default function Settings() {
   const dispatch = useDispatch();
 
   const myUserName = sessionStorage.getItem("userName");
-  const hostUser = sessionStorage.getItem("hostUser") ;
-  const isHostUser = myUserName === hostUser;
+  const myUserDetails = JSON.parse(sessionStorage.getItem("user"));
+  const hostUserID = sessionStorage.getItem("hostUser") ;
+  const isHostUser = myUserDetails.userID === hostUserID;
 
   const languages = [
     { name: "javascript", label: "JavaScript" },
@@ -31,11 +32,8 @@ export default function Settings() {
   ];
 
   const thems = [
-    { name: "base16-light", label: "Base Light" },
     { name: "dracula", label: "Dracula" },
-    { name: "eclipse", label: "Eclipse Light" },
-    { name: "midnight", label: "Midnight" },
-    { name: "solarized dark", label: "Solarized Dark" },
+    { name: "base16-light", label: "Base Light" },
   ];
 
   const fontSizes = [16, 18, 20, 22, 24, 30];
@@ -89,7 +87,7 @@ export default function Settings() {
             </select>
           </div>
 
-          <div className="my-cursor">
+          {/* <div className="my-cursor">
             <label htmlFor="">Show my cursor: </label>
             <input
               type="checkbox"
@@ -98,7 +96,7 @@ export default function Settings() {
                 dispatch(setToolTip(!toolTip));
               }}
             />
-          </div>
+          </div> */}
 
           {isHostUser ? (<HostPermissions/>) : (<GuestPermissions/>)}
         </div>

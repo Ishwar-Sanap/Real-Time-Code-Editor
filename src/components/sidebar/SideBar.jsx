@@ -3,25 +3,88 @@ import Clients from "../Clients";
 import "./SideBar.css";
 import Chat from "../chats/Chat";
 import { FaPlay } from "react-icons/fa";
-import { BsChatSquareTextFill  } from "react-icons/bs";
+import { FaFileDownload } from "react-icons/fa";
+import { BsChatSquareTextFill } from "react-icons/bs";
 import { FaUsers } from "react-icons/fa6";
 import { IoSettingsSharp } from "react-icons/io5";
 import Settings from "../settings/Settings";
 import CodeRunner from "../coderunner/CodeRunner";
 import logo from "../../assets/logo.png";
+import { useSelector } from "react-redux";
+import { useCode } from "../../contexts/CodeContext";
 
 const panels = [
-  { key: "run", icon: <FaPlay size={"25px"}/>, label: "Run" },
-  { key: "chats", icon: <BsChatSquareTextFill  size={"25px"}/>, label: "Chats" },
-  { key: "clients", icon: <FaUsers size={"25px"}/>, label: "Clients" },
-  { key: "settings", icon:<IoSettingsSharp size={"25px"}/>, label: "Settings" },
+  { key: "run", icon: <FaPlay size={"25px"} />, label: "Run" },
+  {
+    key: "chats",
+    icon: <BsChatSquareTextFill size={"25px"} />,
+    label: "Chats",
+  },
+  { key: "clients", icon: <FaUsers size={"25px"} />, label: "Clients" },
+  {
+    key: "settings",
+    icon: <IoSettingsSharp size={"25px"} />,
+    label: "Settings",
+  },
+  {
+    key: "download",
+    icon: <FaFileDownload size={"25px"} />,
+    label: "Download File",
+  },
 ];
+
+const getFileName = (language) => {
+  switch (language.toLowerCase()) {
+    case "python":
+    case "python3":
+      return "test.py";
+    case "cpp":
+      return "test.cpp";
+    case "c":
+      return "test.c";
+    case "java":
+      return "Test.java";
+    case "javascript":
+      return "test.js";
+    default:
+      return "test.txt";
+  }
+};
+
+function downloadCodeFile(content, fileName, language) {
+  const mimeTypes = {
+    javascript: "application/javascript",
+    cpp: "text/x-c++src",
+    c: "text/x-csrc",
+    json: "application/json",
+    txt: "text/plain",
+    python3: "text/x-python",
+    java: "text/x-java-source",
+  };
+
+  const mimeType = mimeTypes[language] || "text/plain";
+
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
 
 export default function Sidebar() {
   const [activePanel, setActivePanel] = useState();
   const [width, setWidth] = useState(350);
   const sidebarRef = useRef(null);
   const isResizing = useRef(false);
+  const language = useSelector((state) => state.editorSettings.language);
+  const { code } = useCode();
 
   const startResize = (e) => {
     isResizing.current = true;
@@ -44,28 +107,29 @@ export default function Sidebar() {
     else setActivePanel(panel.key);
   };
   const renderActivePanelContent = () => {
-    if(activePanel == 'clients'){
-      return <Clients/>;
+    if (activePanel == "clients") {
+      return <Clients />;
+    } else if (activePanel == "chats") {
+      return <Chat />;
+    } else if (activePanel == "settings") {
+      return <Settings />;
+    } else if (activePanel == "run") {
+      return <CodeRunner />;
+    } else if (activePanel == "download") {
+      setActivePanel(null);
+      const fileName = getFileName(language);
+      downloadCodeFile(code, fileName);
+      return null;
     }
-    else if(activePanel == 'chats'){
-      return <Chat/>
-    }
-    else if(activePanel == 'settings'){
-      return <Settings/>
-    }
-    else if(activePanel == 'run'){
-      return <CodeRunner/>
-    }
-      
-  }
+  };
 
   const handleResize = (e) => {
     if (isResizing.current) {
       setWidth(
         Math.max(
           150,
-          e.clientX - sidebarRef.current.getBoundingClientRect().left
-        )
+          e.clientX - sidebarRef.current.getBoundingClientRect().left,
+        ),
       );
     }
   };
@@ -83,9 +147,14 @@ export default function Sidebar() {
     <div className="sidebar-container">
       <div className="sidebar-icons">
         <div className="logo">
-          <img src={logo} alt="Logo" className="sidebar-logo-img" onClick={()=> handlePanelContent("CodeEditor")} />
+          <img
+            src={logo}
+            alt="Logo"
+            className="sidebar-logo-img"
+            onClick={() => handlePanelContent("CodeEditor")}
+          />
         </div>
-        
+
         {panels.map((panel) => {
           return (
             <button
@@ -101,7 +170,7 @@ export default function Sidebar() {
       </div>
 
       <div
-        className={`sidebar-panel ${activePanel? " panel-active" : " " }`}
+        className={`sidebar-panel ${activePanel ? " panel-active" : " "}`}
         ref={sidebarRef}
         style={{
           width: activePanel ? width : 0,
@@ -119,7 +188,6 @@ export default function Sidebar() {
           </>
         )}
       </div>
-
     </div>
   );
 }

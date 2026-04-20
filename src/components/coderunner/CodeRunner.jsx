@@ -23,31 +23,45 @@ const getFileName = (language) => {
   }
 };
 
-let codeRunSuccess = true;
+const JDOODLE_LANGUAGES = {
+  javascript: "nodejs",
+  nodejs: "nodejs",
+  python3: "python3",
+  java: "java",
+  c: "c",
+  cpp: "cpp17",
+};
+
+
 const runCode = async (code, codeInputs, language) => {
   try {
-    const response = await fetch("https://emkc.org/api/v2/piston/execute", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const jdoodleLanguage = JDOODLE_LANGUAGES[language.toLowerCase()];
+
+    if (!jdoodleLanguage) {
+      return { error: `Unsupported language: ${language}` };
+    }
+
+    const CORS_PROXY = "https://corsproxy.io/?";
+    const response = await fetch(
+      CORS_PROXY + "https://api.jdoodle.com/v1/execute",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId: import.meta.env.VITE_JDoodle_CLIENT_ID,
+          clientSecret: import.meta.env.VITE_JDoodle_CLIENT_SECRET,
+          script: code,
+          stdin: codeInputs,
+          language: jdoodleLanguage,
+          versionIndex: "0",
+        }),
       },
-      body: JSON.stringify({
-        language,
-        version: "*", // use latest available version..
-        stdin:codeInputs,
-        files: [
-          {
-            name: getFileName(language),
-            content: code,
-          },
-        ],
-      }),
-    });
+    );
 
     const result = await response.json();
-    return {stdErr: result.run.stderr, codeOutPut : result.run.output};
+    return { stdErr: result.error, codeOutPut: result.output };
   } catch (err) {
-    return {stdErr: err.message , codeOutPut : err.message};
+    return { stdErr: err.message, codeOutPut: err.message };
   }
 };
 
@@ -89,11 +103,11 @@ function showPopUpTooltip(message) {
 export default function CodeRunner() {
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
-  const [codeRunResult , setCodeRunResult]= useState(true);
+  const [codeRunResult, setCodeRunResult] = useState(true);
   const [codeInputs, setCodeInputs] = useState("");
   const language = useSelector((state) => state.editorSettings.language);
   const { code } = useCode();
-  const users = useSelector((state)=> state.connectedClients.clients);
+  const users = useSelector((state) => state.connectedClients.clients);
   const myUserName = sessionStorage.getItem("userName");
 
   const handleRunCode = async () => {
@@ -107,10 +121,9 @@ export default function CodeRunner() {
     setOutput("Running...");
     setCodeRunResult(true);
     // Your API call here
-    const {stdErr, codeOutPut } = await runCode(code,codeInputs,language);
+    const { stdErr, codeOutPut } = await runCode(code, codeInputs, language);
 
     setTimeout(() => {
-  
       if (stdErr) setCodeRunResult(false);
 
       setOutput(codeOutPut);
@@ -148,7 +161,7 @@ export default function CodeRunner() {
 
       <div className="output-box">
         <h4>Code Output</h4>
-        <div className={`code-output ${codeRunResult === true ? " success" : " failure"}`}>{output}</div>
+        <div className={`code-output`}>{output}</div>
         <button className="btn clear-btn" onClick={() => setOutput("")}>
           Clear Output
         </button>

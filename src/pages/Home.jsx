@@ -1,18 +1,17 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { FaCrown } from "react-icons/fa";
 
-let isHostUser = false;
-
 export default function Home() {
   const [roomID, setRoomID] = useState(sessionStorage.getItem("roomID") || "");
   const [userName, setUserName] = useState(
-    sessionStorage.getItem("userName") || ""
+    sessionStorage.getItem("userName") || "",
   );
   const navigate = useNavigate();
+  const isHostUserRef = useRef(false);
 
   const createNewRoom = (e) => {
     e.preventDefault();
@@ -23,7 +22,7 @@ export default function Home() {
     toast.success("New Room Created");
 
     //User who creates the room will be the Host..
-    isHostUser = true;
+    isHostUserRef.current = true;
   };
 
   const joinRoom = (e) => {
@@ -36,7 +35,11 @@ export default function Home() {
     sessionStorage.setItem("userName", userName);
     sessionStorage.setItem("roomID", roomID);
 
-    if (isHostUser) sessionStorage.setItem("hostUser", userName);
+    //To avoid duplicates user's we will store userName and UniqueID
+    const userID = uuidv4();
+    sessionStorage.setItem("user", JSON.stringify({ userName, userID }));
+
+    if (isHostUserRef.current) sessionStorage.setItem("hostUser", userID);
 
     //Redirect to the editor page with roomID
     navigate(`/editor/${roomID}`, {
@@ -53,6 +56,12 @@ export default function Home() {
     }
   };
 
+  const handleRoomIdChange = (roomId) => {
+    isHostUserRef.current = false;
+    sessionStorage.removeItem("hostUser");
+    setRoomID(roomId);
+  };
+
   return (
     <div>
       <div className="home-container">
@@ -66,7 +75,7 @@ export default function Home() {
               type="text"
               placeholder="Room ID"
               className="input-field"
-              onChange={(e) => setRoomID(e.target.value)}
+              onChange={(e) => handleRoomIdChange(e.target.value)}
               value={roomID}
               onKeyUp={handleInputEnter}
             />
@@ -83,13 +92,14 @@ export default function Home() {
             </button>
 
             <span className="create-info">
-              If you don't have an invite then create room as  
+              If you don't have an invite then create room as
               <a
                 onClick={createNewRoom}
                 className="new-room-btn"
                 href="/editor/new"
               >
-                Host<span className="home-page-crown" title="Host">
+                Host
+                <span className="home-page-crown" title="Host">
                   <FaCrown />
                 </span>
               </a>

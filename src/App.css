@@ -173,9 +173,73 @@
   background-color: #494848;
 }
 
+.host-userDetails {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  margin: 12px 10px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(240, 112, 156, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.host-userDetails p {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+}
+
+.host-userDetails span {
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #f072ac 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.5px;
+}
+
+.host-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.host-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+}
+
+.host-info span {
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #f072ac 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.5px;
+}
+
 /* CodeMirror specific styles */
 
-.CodeMirror {
+/* .CodeMirror {
   min-height: calc(100vh - 25px);
   font-size: 20px;
   line-height: 1.5;
@@ -195,4 +259,4 @@
   .form-container {
     margin: 0 10px;
   }
-}
+} */
