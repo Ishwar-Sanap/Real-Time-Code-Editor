@@ -2,8 +2,7 @@ import { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { ClipLoader } from "react-spinners";
-import { FaCrown } from "react-icons/fa";
+import { FaCrown, FaCode, FaUsers, FaLightbulb } from "react-icons/fa";
 
 export default function Home() {
   const [roomID, setRoomID] = useState(sessionStorage.getItem("roomID") || "");
@@ -19,15 +18,17 @@ export default function Home() {
     const id = uuidv4();
     setRoomID(id);
 
-    toast.success("New Room Created");
+    toast.success("New Room Created! Share the ID with your team.");
 
     //User who creates the room will be the Host..
     isHostUserRef.current = true;
   };
 
   const joinRoom = (e) => {
+    e.preventDefault();
+
     if (roomID.length === 0 || userName.length === 0) {
-      toast.error("Room ID & User Name is required");
+      toast.error("Room ID & User Name are required");
       return;
     }
 
@@ -51,7 +52,7 @@ export default function Home() {
 
   const handleInputEnter = (e) => {
     // Check if the key pressed is Enter
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
       joinRoom(e);
     }
   };
@@ -63,47 +64,99 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <div className="home-container">
-        <div className="form-container">
-          <h2>Real Time Code Collaboration ✨</h2>
+    <div className="home-container">
+      <div className="home-wrapper">
+        {/* Left Section - Hero Content */}
+        <div className="hero-section">
+          <div className="hero-content">
+            <h1 className="hero-title">
+              Code Together
+              <br />
+              <span className="gradient-text">In Real-Time</span>
+            </h1>
+            <p className="hero-description">
+              Collaborate with your team on code instantly. Write, review, and
+              chat together with seamless synchronization.
+            </p>
 
-          <h4>Paste Invitation Room ID</h4>
+            {/* Features */}
+            <div className="features-grid">
+              <div className="feature-card">
+                <FaCode className="feature-icon" />
+                <h3>Live Editing</h3>
+                <p>
+                  See live changes and cursor positions instantly
+                </p>
+              </div>
+              <div className="feature-card">
+                <FaUsers className="feature-icon" />
+                <h3>Team Collaboration</h3>
+                <p>Multiple users in one coding session</p>
+              </div>
+              <div className="feature-card">
+                <FaLightbulb className="feature-icon" />
+                <h3>Smart Features</h3>
+                <p>
+                  Syntax highlighting, Role-based access control
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <div className="input-group">
-            <input
-              type="text"
-              placeholder="Room ID"
-              className="input-field"
-              onChange={(e) => handleRoomIdChange(e.target.value)}
-              value={roomID}
-              onKeyUp={handleInputEnter}
-            />
-            <input
-              type="text"
-              placeholder="User Name"
-              className="input-field"
-              onChange={(e) => setUserName(e.target.value)}
-              value={userName}
-              onKeyUp={handleInputEnter}
-            />
-            <button onClick={joinRoom} className="btn join-btn">
-              Join
+        {/* Right Section - Form */}
+        <div className="form-section">
+          <div className="form-container">
+            <div className="form-header">
+              <h2>Join a Room</h2>
+              <p>Start collaborating with your team</p>
+            </div>
+
+            <form onSubmit={joinRoom} className="login-form">
+              <div className="form-group">
+                <label htmlFor="userName">Your Name</label>
+                <input
+                  id="userName"
+                  type="text"
+                  placeholder="Enter your name"
+                  className="input-field"
+                  onChange={(e) => setUserName(e.target.value)}
+                  value={userName}
+                  onKeyUp={handleInputEnter}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="roomID">Room ID</label>
+                <input
+                  id="roomID"
+                  type="text"
+                  placeholder="Paste the room ID"
+                  className="input-field"
+                  onChange={(e) => handleRoomIdChange(e.target.value)}
+                  value={roomID}
+                  onKeyUp={handleInputEnter}
+                />
+              </div>
+
+              <button type="submit" className="btn join-btn">
+                Join Room
+              </button>
+            </form>
+
+            <div className="divider">
+              <span>or</span>
+            </div>
+
+            <button onClick={createNewRoom} className="btn create-btn">
+              <FaCrown className="crown-icon" />
+              Create New Room
             </button>
 
-            <span className="create-info">
-              If you don't have an invite then create room as
-              <a
-                onClick={createNewRoom}
-                className="new-room-btn"
-                href="/editor/new"
-              >
-                Host
-                <span className="home-page-crown" title="Host">
-                  <FaCrown />
-                </span>
-              </a>
-            </span>
+            <p className="form-footer">
+              New to collaboration? Create a room and invite your team members
+              to get started!
+            </p>
           </div>
         </div>
       </div>

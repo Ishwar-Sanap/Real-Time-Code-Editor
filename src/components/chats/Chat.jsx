@@ -125,7 +125,7 @@ export default function Chat() {
       {/* users typing indicator */}
       {usersTyping.length > 0 && (
         <div className="typing-indicator">
-          {usersTyping.join(", ")} {usersTyping.length === 1 ? "is" : "are"}{" "}
+          {usersTyping.join(", ")} {usersTyping.length === 1 ? "is" : " are"}{" "}
           typing...
         </div>
       )}

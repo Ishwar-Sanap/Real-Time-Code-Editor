@@ -29,6 +29,8 @@ export default function Settings() {
     { name: "cpp", label: "C++" },
     { name: "java", label: "Java" },
     { name: "python3", label: "Python3" },
+    { name: "json", label: "JSON" },
+    { name: "text", label: "Plain Text" },
   ];
 
   const thems = [

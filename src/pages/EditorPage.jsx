@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Client from "../components/Clients";
 // import Editor from "../components/Editor";
-import Editor from "../components/Editor_v6";
+import Editor from "../components/EditorV6";
 import { initSocket } from "../socket";
 import ACTIONS from "../actions";
 import {

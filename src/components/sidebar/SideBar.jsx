@@ -46,6 +46,8 @@ const getFileName = (language) => {
       return "Test.java";
     case "javascript":
       return "test.js";
+    case "json":
+      return "test.json";
     default:
       return "test.txt";
   }
