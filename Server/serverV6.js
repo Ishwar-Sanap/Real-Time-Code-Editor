@@ -17,6 +17,9 @@ const app = express();
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
+    credentials: true,
+    allowedHeaders: ["Content-Type"],
+    methods: ["GET", "POST", "OPTIONS"]
   }),
 );
 
@@ -28,7 +31,10 @@ const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST"],
+    credentials: true,
+    allowedHeaders: ["Content-Type"]
   },
+  transports: ["websocket", "polling"]
 });
 
 const rooms = new Map(); // roomID -> { ydoc, awareness }  To store the respective doc in the room
