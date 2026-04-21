@@ -18,7 +18,7 @@ import { setClient, removeClient } from "../redux/slices/clientsSlice";
 import { SocketContext, useSocket } from "../contexts/SocketContext";
 import { MessagesContext } from "../contexts/MessagesContext";
 import { CodeContext } from "../contexts/CodeContext";
-import { useYjsDoc } from "../hooks/UseyjsDoc";
+import { useYjsDoc } from "../hooks/UseyjsDoc.js";
 
 export default function EditorPage() {
   // const socketRef = useRef(null);
