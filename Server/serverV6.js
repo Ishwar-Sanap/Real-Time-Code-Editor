@@ -20,6 +20,8 @@ app.use(
   }),
 );
 
+app.use(express.json());
+
 const server = createServer(app);
 
 const io = new Server(server, {
@@ -224,7 +226,32 @@ function scheduleRoomCleanup() {
     }
   });
 }
-const PORT = process.env.PORT  || 5000;
+
+app.post("/execute", async (req, res) => {
+  try {
+    const response = await fetch("https://api.jdoodle.com/v1/execute", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clientId: process.env.JDoodle_CLIENT_ID,
+        clientSecret: process.env.JDoodle_CLIENT_SECRET,
+        script: req.body.script,
+        stdin : req.body.stdin,
+        language: req.body.language,
+        versionIndex: "0",
+      }),
+    });
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Execution failed" });
+  }
+});
+
+const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT}`);

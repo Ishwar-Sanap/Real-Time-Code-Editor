@@ -27,9 +27,6 @@ export default function EditorPage() {
 
   const [messages, setMessages] = useState([]);
 
-  // useLocation is used to get the state passed from Home component
-  const location = useLocation();
-
   const connectedClients = useSelector(
     (state) => state.connectedClients.clients,
   ); //Get the state from store..
@@ -41,9 +38,7 @@ export default function EditorPage() {
 
   // useParams is used to get the roomID from the URL
   const { roomID } = useParams();
-  const { userName, userID } = JSON.parse(sessionStorage.getItem("user"));
-
-  const hostUser = sessionStorage.getItem("hostUser");
+  const userDetails = JSON.parse(sessionStorage.getItem("user"));
 
   const [loading, setLoading] = useState(true);
   const { yText, awareness, socketRef, status } = useYjsDoc(roomID, setLoading);
@@ -51,19 +46,18 @@ export default function EditorPage() {
   const handleErrors = (err) => {
     toast.error("Socket connection failed, try again later!");
     setLoading(false);
-    dispatch(setClient([]))
+    dispatch(setClient([]));
     reactNavigator("/");
   };
 
   useEffect(() => {
     if (socketRef.current) {
       setLoading(false);
-
     }
   }, [socketRef.current]);
 
-  // If location.state is not present, redirect to Home page
-  if (!location.state) {
+  // If user Details not present then redirect to home page
+  if (!userDetails) {
     return <Navigate to="/" />;
   }
 

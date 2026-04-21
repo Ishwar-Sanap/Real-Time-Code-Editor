@@ -32,7 +32,6 @@ const JDOODLE_LANGUAGES = {
   cpp: "cpp17",
 };
 
-
 const runCode = async (code, codeInputs, language) => {
   try {
     const jdoodleLanguage = JDOODLE_LANGUAGES[language.toLowerCase()];
@@ -41,22 +40,18 @@ const runCode = async (code, codeInputs, language) => {
       return { error: `Unsupported language: ${language}` };
     }
 
-    const CORS_PROXY = "https://corsproxy.io/?";
-    const response = await fetch(
-      CORS_PROXY + "https://api.jdoodle.com/v1/execute",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          clientId: import.meta.env.VITE_JDoodle_CLIENT_ID,
-          clientSecret: import.meta.env.VITE_JDoodle_CLIENT_SECRET,
-          script: code,
-          stdin: codeInputs,
-          language: jdoodleLanguage,
-          versionIndex: "0",
-        }),
-      },
-    );
+    const serverURL = import.meta.env.VITE_SOCKET_URL;
+
+    const response = await fetch(serverURL + "/execute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        script: code,
+        stdin: codeInputs,
+        language: jdoodleLanguage,
+        versionIndex: "0",
+      }),
+    });
 
     const result = await response.json();
     return { stdErr: result.error, codeOutPut: result.output };
