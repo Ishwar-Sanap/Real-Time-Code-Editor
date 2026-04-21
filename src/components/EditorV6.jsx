@@ -40,7 +40,7 @@ export default function Editor({ yText, awareness }) {
   const { codeRef, code, setCode } = useCode();
 
   const me = users.find((u) => u.userID === myUserDetails.userID);
-  const hasWritePermission = me?.permission?.write ?? false;
+  const hasWritePermission = me?.permission?.write ?? null;
 
   // Initialize editor
   useEffect(() => {
@@ -138,11 +138,11 @@ export default function Editor({ yText, awareness }) {
     if (viewRef.current) {
       viewRef.current.dispatch({
         effects: editableCompartment.current.reconfigure(
-          EditorView.editable.of(hasWritePermission),
+          EditorView.editable.of(hasWritePermission ?? false),
         ),
       });
 
-      if (!hasWritePermission) {
+      if (hasWritePermission === false) {
         showPermissionToast();
       }
     }

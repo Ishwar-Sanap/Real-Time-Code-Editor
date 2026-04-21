@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import express from "express";
 import * as Y from "yjs";
 import {
   encodeAwarenessUpdate,
@@ -7,10 +8,26 @@ import {
   Awareness,
 } from "y-protocols/awareness";
 import { createServer } from "http";
-import ACTIONS from "./src/actions.js";
+import ACTIONS from "../src/actions.js";
+import path from "path";
+import "dotenv/config";
+import cors from "cors";
 
-const server = createServer();
-const io = new Server(server, { cors: { origin: "*" } });
+const app = express();
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+  }),
+);
+
+const server = createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST"],
+  },
+});
 
 const rooms = new Map(); // roomID -> { ydoc, awareness }  To store the respective doc in the room
 const roomTimers = new Map(); // roomID -> timeoutId
@@ -207,7 +224,7 @@ function scheduleRoomCleanup() {
     }
   });
 }
-const PORT = 5000;
+const PORT = process.env.PORT  || 5000;
 
 server.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT}`);

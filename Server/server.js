@@ -2,7 +2,7 @@ import express from 'express';
 const app = express();
 import { createServer, get } from 'http';
 import { Server } from 'socket.io';
-import ACTIONS from './src/actions.js';
+import ACTIONS from '../src/actions.js';
 import path  from 'path';
 //Create an Express server
 const server = createServer(app);
